@@ -3,7 +3,7 @@ from django.db import models
 class Course(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
-    image = models.ImageField(upload_to='statci/course_images/')
+    image = models.ImageField(upload_to='static/course_images/')
     video = models.FileField(upload_to='static/course_videos/',blank=True)
 
     def __str__(self):

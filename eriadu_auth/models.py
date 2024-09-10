@@ -2,12 +2,19 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.conf import settings
+from django.core.validators import RegexValidator
+
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
+    def create_user(self, user_phone, password=None, **extra_fields):
+        if not user_phone:
+            raise ValueError('The phone number must be set')
+        user = self.model(user_phone=user_phone, **extra_fields)
+        if password:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()  # This makes the password unusable if not provided
         user.save(using=self._db)
         return user
 
@@ -23,12 +30,13 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=50,unique=True)
-    email = models.EmailField(blank=True)
+    phone_validator = RegexValidator(regex=r'^\d{11}$', message="Phone number must be 11 digits.")
+    username = models.CharField(unique=True,blank=True,null=True,max_length=50)
+    email = models.EmailField(unique=True,null=True,blank=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
-    user_phone = models.IntegerField(validators=[MaxValueValidator(11)],unique=True)
-    is_active = models.BooleanField(default=True,verbose_name="کاربر فعال")
+    user_phone = models.CharField(max_length=11,unique=True,validators=[phone_validator])
+    is_active = models.BooleanField(default=False,verbose_name="کاربر فعال")
     is_staff = models.BooleanField(default=False)
     groups = models.ManyToManyField(
         Group,
@@ -49,3 +57,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+
+
+
+
+class OTP(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    otp_code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
