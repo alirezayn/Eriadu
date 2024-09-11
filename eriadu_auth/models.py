@@ -4,7 +4,7 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.conf import settings
 from django.core.validators import RegexValidator
-
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, user_phone, password=None, **extra_fields):
@@ -38,6 +38,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     user_phone = models.CharField(max_length=11,unique=True,validators=[phone_validator])
     is_active = models.BooleanField(default=False,verbose_name="کاربر فعال")
     is_staff = models.BooleanField(default=False)
+    
     groups = models.ManyToManyField(
         Group,
         related_name='customuser_set',  # Adding related_name to avoid conflicts
@@ -57,6 +58,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+    
+
+    def get_token(self):
+        refresh = RefreshToken.for_user(self)
+        refresh['username'] = self.username  # می‌توانید فیلدهای دیگر مثل email یا role را هم اضافه کنید
+        refresh['email'] = self.email
+        refresh['first_name'] = self.first_name
+        refresh['last_name'] = self.last_name
+        refresh['is_active'] = self.is_active
+        refresh['user_phone'] = self.user_phone
+        return refresh
 
 
 

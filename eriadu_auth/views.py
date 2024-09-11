@@ -32,6 +32,11 @@ class CreateUserView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         # فراخوانی سریالایزر برای تایید داده‌ها
+        user_phone = request.data.get('user_phone')
+        if user.objects.filter(user_phone=user_phone).exists():
+            return Response({
+                'exists': True,
+            }, status=status.HTTP_400_BAD_REQUEST)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -74,9 +79,9 @@ class VerifyOTPView(generics.GenericAPIView):
             # فعال کردن کاربر
             user = otp.user
   
-            refresh = RefreshToken.for_user(user)
             user.is_active = True
             user.save()
+            refresh = user.get_token()
             return Response({'message': 'OTP verified successfully','access':str(refresh.access_token)}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'Invalid or expired OTP'}, status=status.HTTP_400_BAD_REQUEST)
