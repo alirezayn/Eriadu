@@ -32,11 +32,22 @@ class CreateUserView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         # فراخوانی سریالایزر برای تایید داده‌ها
-        user_phone = request.data.get('user_phone')
-        if user.objects.filter(user_phone=user_phone).exists():
+        phone = request.data.get('user_phone')
+        user_exists = user.objects.filter(user_phone=phone).first()
+    
+        if user_exists:
+            new_otp_code = str(random.randint(100000, 999999))
+            otp_object = OTP.objects.filter(user_id=user_exists.id).first()
+            otp_object.otp_code = new_otp_code
+            otp_object.save()
+            # Return the OTP for verification (for testing purposes)
             return Response({
-                'exists': True,
-            }, status=status.HTTP_400_BAD_REQUEST)
+                'suceess':True,
+                'message': 'New OTP has been generated and sent to the user.',
+                'otp_code': otp_object.otp_code,  # This should be sent through a secure channel in a real application
+                'otp_required': True,
+            }, status=status.HTTP_200_OK)
+        
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -50,14 +61,12 @@ class CreateUserView(generics.CreateAPIView):
         # ارسال OTP به شماره تلفن (مثلاً پیامک یا سیستم دیگری)
         user_phone = serializer.validated_data.get('user_phone')
 
-        refresh = RefreshToken.for_user(user)
-        access_token = str(refresh.access_token)
-        refresh_token = str(refresh)
 
 
 
         # ایجاد پاسخ سفارشی
         return Response({
+            'success':True,
             'otp_code': otp_code,
             'message': 'User created, please verify OTP',
             'user_phone': user_phone
@@ -125,8 +134,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 'message': 'New OTP has been generated and sent to the user.',
                 'otp_code': otp_object.otp_code,  # This should be sent through a secure channel in a real application
                 'otp_required': True,
-                # 'refresh_token': str(refresh),
-                # 'access_token': str(refresh.access_token),
             }, status=status.HTTP_200_OK)
 
         return Response({'message': 'User not found'}, status=status.HTTP_400_BAD_REQUEST)
