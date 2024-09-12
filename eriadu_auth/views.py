@@ -91,9 +91,10 @@ class VerifyOTPView(generics.GenericAPIView):
             user.is_active = True
             user.save()
             refresh = user.get_token()
-            return Response({'message': 'OTP verified successfully','access':str(refresh.access_token)}, status=status.HTTP_200_OK)
+            otp.delete()
+            return Response({'success': True,'access':str(refresh.access_token)}, status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'Invalid or expired OTP'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
