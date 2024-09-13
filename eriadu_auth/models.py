@@ -5,7 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.conf import settings
 from django.core.validators import RegexValidator
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from course.models import Course
 class CustomUserManager(BaseUserManager):
     def create_user(self, user_phone, password=None, **extra_fields):
         if not user_phone:
@@ -31,14 +31,16 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     phone_validator = RegexValidator(regex=r'^\d{11}$', message="Phone number must be 11 digits.")
-    username = models.CharField(unique=True,blank=True,null=True,max_length=50)
-    email = models.EmailField(unique=True,null=True,blank=True)
+    username = models.CharField(unique=True,null=True,max_length=50)
+    email = models.EmailField(unique=True,null=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
     user_phone = models.CharField(max_length=11,unique=True,validators=[phone_validator])
     is_active = models.BooleanField(default=False,verbose_name="کاربر فعال")
     is_staff = models.BooleanField(default=False)
-    
+    is_pro = models.BooleanField(default=False)
+    courses = models.ManyToManyField(Course, related_name='allowed_users', blank=True)
+    image_profile = models.ImageField(upload_to='static/users/profile/',blank=True)
     groups = models.ManyToManyField(
         Group,
         related_name='customuser_set',  # Adding related_name to avoid conflicts

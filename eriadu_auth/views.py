@@ -2,7 +2,10 @@
 from rest_framework.response import Response
 from rest_framework import generics, permissions,viewsets,status
 from django.contrib.auth import get_user_model
-from .serializers import CustomUserSerializer,OTPVerifySerializer
+from rest_framework.permissions import AllowAny,IsAuthenticated
+from course.models import Course
+from course.serializers import CourseSerializer
+from .serializers import CustomUserSerializer,OTPVerifySerializer,UserCourseAccessSerializer
 from .models import CustomUser,OTP
 from .permission import *
 from django.shortcuts import get_object_or_404
@@ -36,11 +39,8 @@ class CreateUserView(generics.CreateAPIView):
         user_exists = user.objects.filter(user_phone=phone).first()
     
         if user_exists:
-            new_otp_code = str(random.randint(100000, 999999))
-            otp_object = OTP.objects.filter(user_id=user_exists.id).first()
-            otp_object.otp_code = new_otp_code
-            otp_object.save()
-            # Return the OTP for verification (for testing purposes)
+            otp_code = str(random.randint(100000, 999999))
+            otp_object = OTP.objects.create(user_id=user_exists.id,otp_code=otp_code)
             return Response({
                 'suceess':True,
                 'message': 'New OTP has been generated and sent to the user.',
@@ -111,8 +111,17 @@ class CreateAdminUserView(generics.CreateAPIView):
 class ShowUserViewSet(viewsets.ModelViewSet):
     queryset = user.objects.all()
     serializer_class = CustomUserSerializer
+    # permission_classes = [IsAuthenticated]
+    # def get_queryset(self):
+    #     user = self.request.user
 
-
+    #     if user.is_pro:
+    #         # Return all courses if user is pro
+    #         return CustomUser.objects.all()
+        
+    #     else:
+    #         # Return only courses assigned to the user
+    #         return CustomUser.courses.filter(id=user.id)
 
 
 
@@ -141,3 +150,21 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 
 
+class UserCourseModelViewSet(viewsets.ModelViewSet):
+    queryset = user.objects.all()
+    serializer_class = UserCourseAccessSerializer
+
+
+
+class AccessibleCourseViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_pro:
+            # Pro users can access all courses
+            return Course.objects.all()
+        else:
+            # Return only the courses assigned to the user
+            return user.courses.all()

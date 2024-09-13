@@ -25,7 +25,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'name', 'description' , 'image', 'video', 'titles']
+        fields = ['id', 'name', 'is_pro','description' , 'image', 'video', 'titles']
 
 
 
@@ -53,3 +53,6 @@ class CourseSubtitleCreateSerializer(serializers.ModelSerializer):
         if course_title.course != course:
             raise serializers.ValidationError("عنوان انتخاب شده به دوره انتخاب شده تعلق ندارد.")
         return data
+    
+
+

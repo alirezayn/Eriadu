@@ -16,21 +16,6 @@ class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
-    @action(detail=True, methods=["get"])
-    def filter_by(self, request: Request, pk=None):
-        course_name = request.query_params.get("course_name")
-        print(course_name)
-        if course_name:
-            result = CourseTitle.objects.filter(name=course_name)
-
-            serializer = CourseTitleSerializer(result, many=True)
-            return Response(
-                {"result": True, "data": serializer.data}, status=status.HTTP_200_OK
-            )
-        else:
-            return Response(
-                {"result": False, "error": "course_name params must be set"}
-            )
 
 
 class CourseTitleViewSet(viewsets.ModelViewSet):
