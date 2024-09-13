@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.request import Request
-
+from rest_framework.generics import ListAPIView
 from rest_framework.decorators import action
 from .models import Course, CourseTitle, CourseSubtitle
 from .serializers import (
@@ -9,6 +9,7 @@ from .serializers import (
     CourseTitleSerializer,
     CourseSubtitleSerializer,
     AddCourseTitleSerializer,
+    CourseNameSerializer
 )
 
 
@@ -26,3 +27,9 @@ class CourseTitleViewSet(viewsets.ModelViewSet):
 class CourseSubtitleCreateSerializer(viewsets.ModelViewSet):
     queryset = CourseSubtitle.objects.all()
     serializer_class = CourseSubtitleSerializer
+
+
+
+class CourseNameListView(ListAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseNameSerializer
