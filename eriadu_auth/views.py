@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from course.models import Course
 from course.serializers import CourseSerializer
-from .serializers import CustomUserSerializer,OTPVerifySerializer,UserCourseAccessSerializer
+from .serializers import CustomUserRegisterSerializer,OTPVerifySerializer,UserCourseAccessSerializer
 from .models import CustomUser,OTP
 from .permission import *
 from django.shortcuts import get_object_or_404
@@ -31,7 +31,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class CreateUserView(generics.CreateAPIView):
     model = user
-    serializer_class = CustomUserSerializer
+    serializer_class = CustomUserRegisterSerializer
 
     def create(self, request, *args, **kwargs):
         # فراخوانی سریالایزر برای تایید داده‌ها
@@ -100,7 +100,7 @@ class VerifyOTPView(generics.GenericAPIView):
 
 class CreateAdminUserView(generics.CreateAPIView):
     model = user
-    serializer_class = CustomUserSerializer
+    serializer_class = CustomUserRegisterSerializer
 
     def perform_create(self, serializer):
         serializer.save(is_staff=True, is_superuser=True)
@@ -110,7 +110,7 @@ class CreateAdminUserView(generics.CreateAPIView):
 
 class ShowUserViewSet(viewsets.ModelViewSet):
     queryset = user.objects.all()
-    serializer_class = CustomUserSerializer
+    serializer_class = CustomUserRegisterSerializer
     # permission_classes = [IsAuthenticated]
     # def get_queryset(self):
     #     user = self.request.user

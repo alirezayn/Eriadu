@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -79,27 +80,27 @@ WSGI_APPLICATION = 'eriadu.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # MySQL backend
-        'NAME': 'alirezayn$eriadu',          # Name of your MySQL database
-        'USER': 'alirezayn',               # MySQL username
-        'PASSWORD': 'Adidas:/0631',           # MySQL password
-        'HOST': 'alirezayn.mysql.pythonanywhere-services.com',                   # Database host (use 'localhost' if it's local)
-        'PORT': '3306',                        # MySQL port (default is 3306)
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'"
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',  # MySQL backend
+#         'NAME': 'alirezayn$eriadu',          # Name of your MySQL database
+#         'USER': 'alirezayn',               # MySQL username
+#         'PASSWORD': 'Adidas:/0631',           # MySQL password
+#         'HOST': 'alirezayn.mysql.pythonanywhere-services.com',                   # Database host (use 'localhost' if it's local)
+#         'PORT': '3306',                        # MySQL port (default is 3306)
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'"
+#         }
+#     }
+# }
 
 
 
@@ -139,6 +140,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

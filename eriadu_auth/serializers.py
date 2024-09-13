@@ -6,8 +6,7 @@ from course.models import Course
 from course.serializers import CourseSerializer
 CustomUser = get_user_model()
 
-class CustomUserSerializer(serializers.ModelSerializer):
-    courses = CourseSerializer(many=True, read_only=True)  # Include accessible courses
+class CustomUserRegisterSerializer(serializers.ModelSerializer):
 
 
     class Meta:
@@ -23,13 +22,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'username':{'required':False},              
             'email':{'required':False},              
             }
-        def get_accessible_courses(self, user):
-        # Return all courses if the user is pro
-            if user.is_pro:
-                return Course.objects.all()
 
-            # Otherwise, return only courses assigned to the user
-            return user.courses.all()
 
     # def create(self, validated_data):
     #     user = CustomUser.objects.create_user(
@@ -68,3 +61,31 @@ class UserCourseAccessSerializer(serializers.ModelSerializer):
 
         # Otherwise, return only courses assigned to the user
         return user.courses.all()
+    
+
+
+
+class CustomUserCourseSerializer(serializers.ModelSerializer):
+    courses = CourseSerializer(many=True, read_only=True)  # Include accessible courses
+
+
+    class Meta:
+        model = CustomUser
+        # fields = ('id', 'username','email', 'first_name', 'last_name','user_phone', 'password','is_staff','is_active','is_superuser')
+        # fields = '__all__'
+        fields = ['user_phone','courses']            
+        extra_kwargs = {
+            'password': {
+                'write_only': True,
+                'required':False
+                },
+            'username':{'required':False},              
+            'email':{'required':False},              
+            }
+        def get_accessible_courses(self, user):
+        # Return all courses if the user is pro
+            if user.is_pro:
+                return Course.objects.all()
+
+            # Otherwise, return only courses assigned to the user
+            return user.courses.all()
