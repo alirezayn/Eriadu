@@ -30,8 +30,6 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class CourseNameSerializer(serializers.ModelSerializer):
-    # titles = CourseTitleSerializer(many=True, read_only=True)
-
     class Meta:
         model = Course
         fields = ['id', 'name', 'is_pro']
