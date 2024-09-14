@@ -35,31 +35,32 @@ class CreateUserView(generics.CreateAPIView):
     serializer_class = CustomUserRegisterSerializer
 
     def create(self, request, *args, **kwargs):
-        # فراخوانی سریالایزر برای تایید داده‌ها
         phone = request.data.get('user_phone')
         user_exists = user.objects.filter(user_phone=phone).first()
-    
+        former_otp = OTP.objects.filter(user_id=user_exists.id)
+        if former_otp:
+            former_otp.delete()
         if user_exists:
             otp_code = str(random.randint(100000, 999999))
             otp_object = OTP.objects.create(user_id=user_exists.id,otp_code=otp_code)
             return Response({
                 'suceess':True,
                 'message': 'New OTP has been generated and sent to the user.',
-                'otp_code': otp_object.otp_code,  # This should be sent through a secure channel in a real application
+                'otp_code': otp_object.otp_code, 
                 'otp_required': True,
             }, status=status.HTTP_200_OK)
         
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # ذخیره کاربر و غیر فعال کردن حساب کاربری
+
         user_instance = serializer.save(is_staff=False, is_superuser=False, is_active=False)
 
-        # تولید OTP
-        otp_code = str(random.randint(100000, 999999))  # تولید یک کد ۶ رقمی
+
+        otp_code = str(random.randint(100000, 999999)) 
         OTP.objects.create(user=user_instance, otp_code=otp_code)
 
-        # ارسال OTP به شماره تلفن (مثلاً پیامک یا سیستم دیگری)
+
         user_phone = serializer.validated_data.get('user_phone')
 
 
