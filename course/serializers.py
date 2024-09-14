@@ -4,7 +4,7 @@ from .models import Course, CourseTitle,CourseSubtitle
 class AddCourseTitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseTitle
-        fields = ['course', 'chapter']
+        fields = ['id','course', 'chapter']
 
 
 class CourseSubtitleSerializer(serializers.ModelSerializer):
