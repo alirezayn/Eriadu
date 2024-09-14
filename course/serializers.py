@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import Course, CourseTitle,CourseSubtitle
 
 class AddCourseTitleSerializer(serializers.ModelSerializer):
+    course = serializers.SlugRelatedField(slug_field='name', queryset=Course.objects.all())
+    chapter = serializers.CharField()
     class Meta:
         model = CourseTitle
         fields = ['id','course', 'chapter']
