@@ -8,19 +8,19 @@ class AddCourseTitleSerializer(serializers.ModelSerializer):
 
 
 class CourseSubtitleSerializer(serializers.ModelSerializer):
-    course_name = serializers.SerializerMethodField()
-    course_title = serializers.SerializerMethodField()
+    # course_name = serializers.SerializerMethodField()
+    # course_title = serializers.SerializerMethodField()
     name = serializers.CharField(source='section')
 
     class Meta:
         model = CourseSubtitle
         fields = ['content','name','course_name','course_title']
 
-    def get_course_name(self, obj):
-        return obj.course_name.name  # assuming 'name' is a field in Course model
+    # def get_course_name(self, obj):
+    #     return obj.course_name.name  # assuming 'name' is a field in Course model
 
-    def get_course_title(self, obj):
-        return obj.course_title.chapter  # assuming 'title' is a field in CourseTitle model
+    # def get_course_title(self, obj):
+    #     return obj.course_title.chapter  # assuming 'title' is a field in CourseTitle model
 
 
 
