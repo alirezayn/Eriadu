@@ -48,6 +48,13 @@ class CourseNameSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'is_pro','image']
 
 
+class CourseNameSerializerById(serializers.ModelSerializer):
+    titles = CourseTitleSerializer(many=True,read_only=True)
+    class Meta:
+        model = Course
+        fields = ['id', 'name', 'is_pro','image','titles']
+
+
 
 
 
