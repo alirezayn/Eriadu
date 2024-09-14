@@ -1,11 +1,12 @@
 # myapp/views.py
 from rest_framework.response import Response
+from rest_framework.request import Request
 from rest_framework import generics, permissions,viewsets,status
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from course.models import Course
 from course.serializers import CourseSerializer
-from .serializers import CustomUserRegisterSerializer,OTPVerifySerializer,UserCourseAccessSerializer
+from .serializers import *
 from .models import CustomUser,OTP
 from .permission import *
 from django.shortcuts import get_object_or_404
@@ -168,3 +169,15 @@ class AccessibleCourseViewSet(viewsets.ReadOnlyModelViewSet):
         else:
             # Return only the courses assigned to the user
             return user.courses.all()
+
+
+class UserCourseListApiView(generics.ListAPIView):
+    serializer_class = CustomUserCourseSerializer
+
+    def get_queryset(self):
+        user_phone = self.request.query_params.get('phone')
+        user_object = user.objects.filter(user_phone=user_phone)
+        if user_object:
+            return user_object
+        else:
+            return user.objects.all()

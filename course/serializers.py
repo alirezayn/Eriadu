@@ -4,25 +4,36 @@ from .models import Course, CourseTitle,CourseSubtitle
 class AddCourseTitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseTitle
-        fields = ['course', 'title']
+        fields = ['course', 'chapter']
 
 
 class CourseSubtitleSerializer(serializers.ModelSerializer):
+    course_name = serializers.SerializerMethodField()
+    course_title = serializers.SerializerMethodField()
+    name = serializers.CharField(source='section')
+
     class Meta:
         model = CourseSubtitle
-        fields = ['course_name','course_title','content','chapters']
+        fields = ['content','name','course_name','course_title']
+
+    def get_course_name(self, obj):
+        return obj.course_name.name  # assuming 'name' is a field in Course model
+
+    def get_course_title(self, obj):
+        return obj.course_title.chapter  # assuming 'title' is a field in CourseTitle model
+
+
 
 
 class CourseTitleSerializer(serializers.ModelSerializer):
-    chapters = CourseSubtitleSerializer(many=True, read_only=True)
+    section = CourseSubtitleSerializer(many=True, read_only=True)
     class Meta:
         model = CourseTitle
-        fields = ['id', 'title', 'chapters']
+        fields = ['id', 'chapter', 'section']
 
 
 class CourseSerializer(serializers.ModelSerializer):
     titles = CourseTitleSerializer(many=True, read_only=True)
-
     class Meta:
         model = Course
         fields = ['id', 'name', 'is_pro','description' , 'image', 'video', 'titles']
@@ -43,7 +54,7 @@ class CourseChapterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CourseSubtitle
-        fields = ['id', 'chapters', 'content', 'course_title']
+        fields = ['id', 'section', 'content', 'course_title']
 
 
 class CourseSubtitleCreateSerializer(serializers.ModelSerializer):
@@ -52,7 +63,7 @@ class CourseSubtitleCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CourseSubtitle
-        fields = ['course', 'course_title', 'chapters', 'content']
+        fields = ['course', 'course_title', 'section', 'content']
 
     def validate(self, data):
         course = data.get('course')

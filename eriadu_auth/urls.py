@@ -10,5 +10,5 @@ urlpatterns = [
     path('',include(route.urls)),
     path('register/', CreateUserView.as_view(), name='register'),
     path('verify-otp/',VerifyOTPView.as_view(),name='verifyOtp'),
-    path('login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('course/',UserCourseListApiView.as_view(),name='user_course')
 ]
