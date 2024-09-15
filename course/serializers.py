@@ -16,7 +16,7 @@ class CourseSubtitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CourseSubtitle
-        fields = ['content','name','course_name','course_title','code']
+        fields = ['id','content','name','course_name','course_title','code']
 
     # def get_course_name(self, obj):
     #     return obj.course_name.name  # assuming 'name' is a field in Course model
