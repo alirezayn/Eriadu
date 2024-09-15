@@ -44,7 +44,7 @@ class CreateUserView(generics.CreateAPIView):
             otp_code = str(random.randint(100000, 999999))
             otp_object = OTP.objects.create(user_id=user_exists.id,otp_code=otp_code)
             return Response({
-                'suceess':True,
+                'success':True,
                 'message': 'New OTP has been generated and sent to the user.',
                 'otp_code': otp_object.otp_code, 
                 'otp_required': True,
