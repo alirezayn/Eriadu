@@ -9,6 +9,10 @@ class AddCourseTitleSerializer(serializers.ModelSerializer):
         fields = ['id','course', 'chapter']
 
 
+
+
+
+
 class CourseSubtitleSerializer(serializers.ModelSerializer):
     # course_name = serializers.SerializerMethodField()
     # course_title = serializers.SerializerMethodField()
@@ -24,7 +28,11 @@ class CourseSubtitleSerializer(serializers.ModelSerializer):
     # def get_course_title(self, obj):
     #     return obj.course_title.chapter  # assuming 'title' is a field in CourseTitle model
 
-
+class CourseTitleSectionSerializer(serializers.ModelSerializer):
+    section = CourseSubtitleSerializer(many=True,read_only =True)
+    class Meta:
+        model = CourseTitle
+        fields = ['id','section']
 
 
 class CourseTitleSerializer(serializers.ModelSerializer):

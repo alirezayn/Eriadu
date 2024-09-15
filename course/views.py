@@ -11,7 +11,8 @@ from .serializers import (
     CourseSubtitleSerializer,
     AddCourseTitleSerializer,
     CourseNameSerializer,
-    CourseNameSerializerById
+    CourseNameSerializerById,
+    CourseTitleSectionSerializer
 )
 
 
@@ -19,6 +20,10 @@ class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
+    @action(detail=True, methods=['post'])
+    def title(self, request:Request, pk=None):
+        query = request.query_params.get('title')
+        print(query)
 
 
 class CourseTitleViewSet(viewsets.ModelViewSet):
@@ -26,7 +31,19 @@ class CourseTitleViewSet(viewsets.ModelViewSet):
     serializer_class = AddCourseTitleSerializer
 
 
-class CourseSubtitleCreateSerializer(viewsets.ModelViewSet):
+class SectionTitleViewSet(ListAPIView):
+    serializer_class = CourseTitleSectionSerializer
+    def get_queryset(self):
+        request :Request = self.request
+        query = request.query_params.get('id')
+        print(query)
+        if query:
+            return CourseTitle.objects.filter(id=query)
+        else:
+            return CourseTitle.objects.none()
+
+
+class CourseSubtitleCreateViewSet(viewsets.ModelViewSet):
     queryset = CourseSubtitle.objects.all()
     serializer_class = CourseSubtitleSerializer
 

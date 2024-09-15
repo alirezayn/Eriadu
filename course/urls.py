@@ -5,10 +5,11 @@ from .views import *
 router = DefaultRouter()
 router.register(r'list', CourseViewSet)
 router.register(r'titles', CourseTitleViewSet)
-router.register(r'chapters', CourseSubtitleCreateSerializer)
+router.register(r'chapters', CourseSubtitleCreateViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
     path('category/',view=CourseNameListView.as_view(),name='course_list'),
-    path('category_by_id/',view=CourseNameListViewById.as_view(),name='course_by_id')
+    path('category_by_id/',view=CourseNameListViewById.as_view(),name='course_by_id'),
+    path('section/',view=SectionTitleViewSet.as_view(),name='section')
 ]
