@@ -22,6 +22,7 @@ class CourseSubtitle(models.Model):
     section = models.CharField(max_length=255)
     content = models.TextField(blank=True)
     course = models.CharField(max_length=255)
+    code = models.TextField(blank=True)
     course_title = models.ForeignKey(CourseTitle, related_name='section', on_delete=models.CASCADE)
     course_name = models.ForeignKey(Course,related_name='course',on_delete=models.CASCADE)
 
