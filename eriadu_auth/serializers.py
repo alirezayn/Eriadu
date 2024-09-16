@@ -9,7 +9,7 @@ CustomUser = get_user_model()
 class CustomUserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['user_phone']            
+        fields = ['id','user_phone']            
         extra_kwargs = {
             'password': {
                 'write_only': True,

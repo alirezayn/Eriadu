@@ -22,5 +22,7 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
     path('auth/', include('eriadu_auth.urls')),
     path('user/', include('eriadu_auth.urls')),
-    path('course/',include('course.urls'))
+    path('course/',include('course.urls')),
+    path('progress/',include('progress.urls'))
+
 ]
