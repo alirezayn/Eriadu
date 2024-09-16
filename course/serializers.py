@@ -27,7 +27,7 @@ class SubSectionSerializer(serializers.ModelSerializer):
     sub_section_content = SubSectionContentSerializer(many=True,read_only=True)
     class Meta:
         model = SubSection
-        fields = ['id','sub_section_content']
+        fields = ['id','title','image','sub_section','sub_section_content']
 
 class CourseSubtitleSerializer(serializers.ModelSerializer):
     # course_name = serializers.SerializerMethodField()
