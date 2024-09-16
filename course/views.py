@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView,RetrieveAPIView
 from rest_framework.decorators import action
 from .models import Course, CourseTitle, CourseSubtitle,QuestionTitleSection, SubSection, SubSectionContent
 from .serializers import (
@@ -56,14 +56,13 @@ class CourseNameListView(ListAPIView):
 
 
 
-class CourseNameListViewById(ListAPIView):
+class CourseNameListViewById(RetrieveAPIView):
     serializer_class =CourseNameSerializerById
+    lookup_field = 'id'
 
-    def get_queryset(self):
+    def get_object(self):
         course_id = self.request.query_params.get('id')
-        course = Course.objects.filter(id=course_id)
-        course = get_object_or_404(Course, id=course_id)
-        return Course.objects.filter(id=course.id).first()
+        return get_object_or_404(Course, id=course_id)
 
 class QuestionSectionViewSet(viewsets.ModelViewSet):
     queryset = QuestionTitleSection.objects.all()
