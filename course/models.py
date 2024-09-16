@@ -49,3 +49,25 @@ class QuestionTitleSection(models.Model):
     question = models.ForeignKey(CourseSubtitle,related_name='question',on_delete=models.CASCADE)
     def __str__(self):
         return self.title
+    
+
+
+
+
+
+class SubSection(models.Model):
+    title = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='static/subSection/',blank=True,null=True)
+    sub_section = models.ForeignKey(CourseSubtitle,related_name='sub_section',on_delete=models.CASCADE)
+
+
+
+    def __str__(self) -> str:
+        return self.title
+
+
+class SubSectionContent(models.Model):
+    content = models.TextField()
+    sub_section_content = models.ForeignKey(SubSection,related_name='sub_section_content',on_delete=models.CASCADE)
+
+    

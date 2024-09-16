@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.generics import ListAPIView
 from rest_framework.decorators import action
-from .models import Course, CourseTitle, CourseSubtitle,QuestionTitleSection
+from .models import Course, CourseTitle, CourseSubtitle,QuestionTitleSection, SubSection, SubSectionContent
 from .serializers import (
     CourseSerializer,
     CourseTitleSerializer,
@@ -12,7 +12,8 @@ from .serializers import (
     AddCourseTitleSerializer,
     CourseNameSerializer,
     CourseNameSerializerById,
-    CourseTitleSectionSerializer,QuestioSectionSerialzer
+    CourseTitleSectionSerializer,QuestioSectionSerialzer,
+    SubSectionContentSerializer,SubSectionSerializer
 )
 
 
@@ -67,3 +68,12 @@ class CourseNameListViewById(ListAPIView):
 class QuestionSectionViewSet(viewsets.ModelViewSet):
     queryset = QuestionTitleSection.objects.all()
     serializer_class = QuestioSectionSerialzer
+
+
+class SubSectionViewSet(viewsets.ModelViewSet):
+    queryset = SubSection.objects.all()
+    serializer_class = SubSectionSerializer
+
+class SubSectionContentViewSet(viewsets.ModelViewSet):
+    queryset = SubSectionContent.objects.all()
+    serializer_class = SubSectionContentSerializer
