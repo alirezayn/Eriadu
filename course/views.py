@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.generics import ListAPIView
 from rest_framework.decorators import action
-from .models import Course, CourseTitle, CourseSubtitle
+from .models import Course, CourseTitle, CourseSubtitle,QuestionTitleSection
 from .serializers import (
     CourseSerializer,
     CourseTitleSerializer,
@@ -12,7 +12,7 @@ from .serializers import (
     AddCourseTitleSerializer,
     CourseNameSerializer,
     CourseNameSerializerById,
-    CourseTitleSectionSerializer
+    CourseTitleSectionSerializer,QuestioSectionSerialzer
 )
 
 
@@ -64,3 +64,6 @@ class CourseNameListViewById(ListAPIView):
         course = get_object_or_404(Course, id=course_id)
         return Course.objects.filter(id=course.id)
 
+class QuestionSectionViewSet(viewsets.ModelViewSet):
+    queryset = QuestionTitleSection.objects.all()
+    serializer_class = QuestioSectionSerialzer

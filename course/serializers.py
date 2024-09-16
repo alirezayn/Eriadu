@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, CourseTitle,CourseSubtitle
+from .models import Course, CourseTitle,CourseSubtitle,QuestionTitleSection
 
 class AddCourseTitleSerializer(serializers.ModelSerializer):
     course = serializers.SlugRelatedField(slug_field='name', queryset=Course.objects.all())
@@ -10,6 +10,10 @@ class AddCourseTitleSerializer(serializers.ModelSerializer):
 
 
 
+class QuestionTitleSectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionTitleSection
+        fields = ['id', 'title', 'option_1', 'option_2', 'option_3', 'option_4', 'answer']
 
 
 
@@ -17,10 +21,12 @@ class CourseSubtitleSerializer(serializers.ModelSerializer):
     # course_name = serializers.SerializerMethodField()
     # course_title = serializers.SerializerMethodField()
     name = serializers.CharField(source='section')
-
+    # section = serializers.PrimaryKeyRelatedField(queryset=QuestionTitleSection.objects.all())
+    question = QuestionTitleSectionSerializer(many=True, read_only=True) 
     class Meta:
         model = CourseSubtitle
-        fields = ['id','content','name','course_name','course_title','code']
+        fields = ['id','content','name','course_name','course_title','code','question']
+        # fields = '__all__'
 
     # def get_course_name(self, obj):
     #     return obj.course_name.name  # assuming 'name' is a field in Course model
@@ -93,3 +99,8 @@ class CourseSubtitleCreateSerializer(serializers.ModelSerializer):
     
 
 
+class QuestioSectionSerialzer(serializers.ModelSerializer):
+    question = serializers.PrimaryKeyRelatedField(queryset=CourseSubtitle.objects.all())
+    class Meta:
+        model = QuestionTitleSection
+        fields = '__all__'

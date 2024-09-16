@@ -28,3 +28,24 @@ class CourseSubtitle(models.Model):
 
     def __str__(self):
         return self.section
+    
+
+
+class QuestionTitleSection(models.Model):
+    title = models.CharField(max_length=255)
+    option_1 = models.CharField(max_length=255)
+    option_2 = models.CharField(max_length=255)
+    option_3 = models.CharField(max_length=255)
+    option_4 = models.CharField(max_length=255)
+    
+    ANSWER_CHOICES = (
+        ('option_1', 'Option 1'),
+        ('option_2', 'Option 2'),
+        ('option_3', 'Option 3'),
+        ('option_4', 'Option 4'),
+    )
+    
+    answer = models.CharField(max_length=10, choices=ANSWER_CHOICES)
+    question = models.ForeignKey(CourseSubtitle,related_name='question',on_delete=models.CASCADE)
+    def __str__(self):
+        return self.title

@@ -6,6 +6,7 @@ router = DefaultRouter()
 router.register(r'list', CourseViewSet)
 router.register(r'titles', CourseTitleViewSet)
 router.register(r'chapters', CourseSubtitleCreateViewSet)
+router.register('question',QuestionSectionViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
