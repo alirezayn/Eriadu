@@ -63,7 +63,7 @@ class CourseNameListViewById(ListAPIView):
         course_id = self.request.query_params.get('id')
         course = Course.objects.filter(id=course_id)
         course = get_object_or_404(Course, id=course_id)
-        return Course.objects.filter(id=course.id)
+        return Course.objects.filter(id=course.id).first()
 
 class QuestionSectionViewSet(viewsets.ModelViewSet):
     queryset = QuestionTitleSection.objects.all()
