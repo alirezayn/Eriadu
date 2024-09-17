@@ -46,7 +46,8 @@ class QuestionTitleSection(models.Model):
     )
     
     answer = models.CharField(max_length=10, choices=ANSWER_CHOICES)
-    question = models.ForeignKey(CourseSubtitle,related_name='question',on_delete=models.CASCADE)
+    question = models.ForeignKey(CourseTitle,related_name='question',on_delete=models.CASCADE)
+    
     def __str__(self):
         return self.title
     

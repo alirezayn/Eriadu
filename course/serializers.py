@@ -14,6 +14,7 @@ class QuestionTitleSectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuestionTitleSection
         fields = ['id', 'title', 'option_1', 'option_2', 'option_3', 'option_4', 'answer']
+        # fields = '__all__'
 
 
 
@@ -35,11 +36,10 @@ class CourseSubtitleSerializer(serializers.ModelSerializer):
     # course_title = serializers.SerializerMethodField()
     name = serializers.CharField(source='section')
     # section = serializers.PrimaryKeyRelatedField(queryset=QuestionTitleSection.objects.all())
-    question = QuestionTitleSectionSerializer(many=True, read_only=True) 
     sub_section = SubSectionSerializer(many=True,read_only=True)
     class Meta:
         model = CourseSubtitle
-        fields = ['id','content','name','course_name','course_title','code','question','sub_section']
+        fields = ['id','content','name','course_name','course_title','code','sub_section']
         # fields = '__all__'
 
     # def get_course_name(self, obj):
@@ -57,9 +57,10 @@ class CourseTitleSectionSerializer(serializers.ModelSerializer):
 
 class CourseTitleSerializer(serializers.ModelSerializer):
     section = CourseSubtitleSerializer(many=True, read_only=True)
+    question = QuestionTitleSectionSerializer(many=True, read_only=True) 
     class Meta:
         model = CourseTitle
-        fields = ['id', 'chapter', 'section']
+        fields = ['id', 'chapter','question', 'section']
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -114,7 +115,7 @@ class CourseSubtitleCreateSerializer(serializers.ModelSerializer):
 
 
 class QuestioSectionSerialzer(serializers.ModelSerializer):
-    question = serializers.PrimaryKeyRelatedField(queryset=CourseSubtitle.objects.all())
+    question = serializers.PrimaryKeyRelatedField(queryset=CourseTitle.objects.all())
     class Meta:
         model = QuestionTitleSection
         fields = '__all__'

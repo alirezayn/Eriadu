@@ -78,7 +78,7 @@ class CourseNameListViewById(RetrieveAPIView):
 class QuestionSectionViewSet(viewsets.ModelViewSet):
     queryset = QuestionTitleSection.objects.all()
     serializer_class = QuestioSectionSerialzer
-
+    
 
 class SubSectionViewSet(viewsets.ModelViewSet):
     queryset = SubSection.objects.all()
