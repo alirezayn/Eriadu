@@ -7,10 +7,27 @@ from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from course.models import Course, CourseSubtitle, QuestionTitleSection
-from .utils import complete_section, answer_question
+from course.models import Course, CourseSubtitle, QuestionTitleSection,CourseTitle
+from .utils import complete_section, answer_question, complete_title
 
 
+
+
+class CompleteTitleView(APIView):
+    def post(self, request, course_id, title_id):
+        user = request.user
+        
+        # Try to get the Course and CourseTitle objects
+        try:
+            course = Course.objects.get(id=course_id)
+            course_title = CourseTitle.objects.get(id=title_id, course=course)
+        except (Course.DoesNotExist, CourseTitle.DoesNotExist):
+            return Response({'message': False}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Mark the title as complete for the user
+        complete_title(user, course, course_title)
+        
+        return Response({'message': True}, status=status.HTTP_200_OK)
 
 class CompleteSectionView(APIView):
     def post(self, request, course_id, section_id):
@@ -27,6 +44,8 @@ class CompleteSectionView(APIView):
         complete_section(user, course, section)
         
         return Response({'message': True}, status=status.HTTP_200_OK)
+    
+
 class AnswerQuestionView(APIView):
     def post(self, request, course_id, question_id):
         user = request.user

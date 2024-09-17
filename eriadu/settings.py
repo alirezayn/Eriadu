@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-0)%^ccy9)k&eu*up17h&sd*7&1!9v6ci*bx-3)slm^2g_=#!=z
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'alirezayn.pythonanywhere.com'
+    # 'alirezayn.pythonanywhere.com'
 ]
 
 
@@ -91,19 +91,19 @@ DATABASES = {
 }
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',  # MySQL backend
-        'NAME': 'alirezayn$eriadu',          # Name of your MySQL database
-        'USER': 'alirezayn',               # MySQL username
-        'PASSWORD': 'Adidas:/0631',           # MySQL password
-        'HOST': 'alirezayn.mysql.pythonanywhere-services.com',                   # Database host (use 'localhost' if it's local)
-        'PORT': '3306',                        # MySQL port (default is 3306)
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'"
-        }
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',  # MySQL backend
+#         'NAME': 'alirezayn$eriadu',          # Name of your MySQL database
+#         'USER': 'alirezayn',               # MySQL username
+#         'PASSWORD': 'Adidas:/0631',           # MySQL password
+#         'HOST': 'alirezayn.mysql.pythonanywhere-services.com',                   # Database host (use 'localhost' if it's local)
+#         'PORT': '3306',                        # MySQL port (default is 3306)
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'"
+#         }
+#     }
+# }
 
 
 
@@ -143,8 +143,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_ROOT = '/home/alirezayn/Eriadu/static'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = '/home/alirezayn/Eriadu/static'
 
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, 'Eriadu/static'),

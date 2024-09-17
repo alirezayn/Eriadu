@@ -5,4 +5,4 @@ from progress.models import UserProgress
 class UserProgressSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProgress
-        fields = ['user','course', 'current_section', 'completed_sections', 'answered_questions', 'progress_percentage', 'last_accessed']
+        fields = ['user','course', 'current_section', 'completed_sections', 'completed_title','answered_questions', 'progress_percentage', 'last_accessed']
