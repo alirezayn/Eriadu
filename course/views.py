@@ -2,7 +2,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework.generics import ListAPIView,RetrieveAPIView
+from rest_framework.generics import ListAPIView,RetrieveAPIView,DestroyAPIView
+from rest_framework.exceptions import NotFound
 from rest_framework.decorators import action
 from .models import Course, CourseTitle, CourseSubtitle,QuestionTitleSection, SubSection, SubSectionContent
 from .serializers import (
@@ -32,16 +33,25 @@ class CourseTitleViewSet(viewsets.ModelViewSet):
     serializer_class = AddCourseTitleSerializer
 
 
-class SectionTitleViewSet(ListAPIView):
+class SectionTitleViewSet(RetrieveAPIView,DestroyAPIView):
     serializer_class = CourseTitleSectionSerializer
-    def get_queryset(self):
-        request :Request = self.request
+    lookup_field = 'id'
+    def get_object(self):
+        request: Request = self.request
         query = request.query_params.get('id')
-        print(query)
         if query:
-            return CourseTitle.objects.filter(id=query)
+            try:
+                return CourseTitle.objects.get(id=query)
+            except CourseTitle.DoesNotExist:
+                raise NotFound("CourseTitle with this ID does not exist.")
         else:
-            return CourseTitle.objects.none()
+            raise NotFound("ID parameter is required.")
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"message": "section deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
 
 
 class CourseSubtitleCreateViewSet(viewsets.ModelViewSet):
@@ -61,7 +71,8 @@ class CourseNameListViewById(RetrieveAPIView):
     lookup_field = 'id'
 
     def get_object(self):
-        course_id = self.request.query_params.get('id')
+        request : Request = self.request
+        course_id = request.query_params.get('id')
         return get_object_or_404(Course, id=course_id)
 
 class QuestionSectionViewSet(viewsets.ModelViewSet):
