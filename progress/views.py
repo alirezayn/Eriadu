@@ -15,24 +15,29 @@ from .utils import complete_section, answer_question
 class CompleteSectionView(APIView):
     def post(self, request, course_id, section_id):
         user = request.user
-        course = Course.objects.get(id=course_id)
-        section = CourseSubtitle.objects.get(id=section_id)
-
+        
+        # Try to get the Course and CourseSubtitle objects
+        try:
+            course = Course.objects.get(id=course_id)
+            section = CourseSubtitle.objects.get(id=section_id)
+        except (Course.DoesNotExist, CourseSubtitle.DoesNotExist):
+            return Response({'message': False}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Mark the section as complete for the user
         complete_section(user, course, section)
-
-        return Response({'message': 'Section completed successfully'}, status=status.HTTP_200_OK)
-
+        
+        return Response({'message': True}, status=status.HTTP_200_OK)
 class AnswerQuestionView(APIView):
-    def post(self, request, section_id, question_id):
+    def post(self, request, course_id, question_id):
         user = request.user
-        section = CourseSubtitle.objects.get(id=section_id)
+        section = Course.objects.get(id=course_id)
         question = QuestionTitleSection.objects.get(id=question_id)
 
         # ثبت پاسخ کاربر برای سکشن مشخص
         answer_question(user, section, question)
 
-        return Response({'message': 'Question answered successfully for the section'}, status=status.HTTP_200_OK)
-
+        return Response({'message': True}, status=status.HTTP_200_OK)
+            
 
 class UserProgressListView(generics.ListAPIView):
     serializer_class = UserProgressSerializer

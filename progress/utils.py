@@ -11,6 +11,7 @@ def complete_section(user, course, section):
         progress.current_section = section  # Update the current section
         progress.update_progress()  # Update the progress percentage
 
+
 def answer_question(user, section, question):
     # Get or create progress entry based on section
     progress, created = UserProgress.objects.get_or_create(user=user, current_section=section)
@@ -18,3 +19,4 @@ def answer_question(user, section, question):
     # Add the question to answered questions if not already answered
     if question not in progress.answered_questions.all():
         progress.answered_questions.add(question)
+ 
