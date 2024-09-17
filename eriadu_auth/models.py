@@ -59,7 +59,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'user_phone'
 
     def __str__(self):
-        return self.username
+        return self.user_phone
     
 
     def get_token(self):

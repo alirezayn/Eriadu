@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, CourseTitle,CourseSubtitle,QuestionTitleSection, SubSection, SubSectionContent
+from .models import Course, CourseExam, CourseTitle,CourseSubtitle,QuestionTitleSection, SubSection, SubSectionContent,CourseIntroduction
 
 class AddCourseTitleSerializer(serializers.ModelSerializer):
     course = serializers.SlugRelatedField(slug_field='name', queryset=Course.objects.all())
@@ -63,18 +63,42 @@ class CourseTitleSerializer(serializers.ModelSerializer):
         fields = ['id', 'chapter','question', 'section']
 
 
-class CourseSerializer(serializers.ModelSerializer):
-    titles = CourseTitleSerializer(many=True, read_only=True)
+
+
+
+class CourseIntroSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseIntroduction
+        fields = '__all__'
+
+
+
+class CourseIntroductionSerializer(serializers.ModelSerializer):
+    course_intro = CourseIntroSerializer(many=True)
     class Meta:
         model = Course
-        fields = ['id', 'name', 'is_pro','description' , 'image', 'video', 'titles']
+        fields = ['id', 'name','image','course_intro']
+
+
+
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    titles = CourseTitleSerializer(many=True, read_only=True)
+    # course_intro = CourseIntroSerializer(many=True)
+    class Meta:
+        model = Course
+        fields = ['id', 'name','is_pro','description', 'image', 'video', 'titles']
+
+
+
 
 
 
 class CourseNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['id', 'name', 'is_pro','image']
+        fields = ['id', 'name', 'is_pro', 'image']
 
 
 class CourseNameSerializerById(serializers.ModelSerializer):
@@ -119,3 +143,18 @@ class QuestioSectionSerialzer(serializers.ModelSerializer):
     class Meta:
         model = QuestionTitleSection
         fields = '__all__'
+
+
+
+
+class ExamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseExam
+        fields = '__all__'
+
+        
+class CourseExamSerializer(serializers.ModelSerializer):
+    exam = ExamSerializer(many=True)
+    class Meta:
+        model = Course
+        fields = ['id','name','exam']

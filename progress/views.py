@@ -1,73 +1,83 @@
-# progress/views.py
-from rest_framework import generics
-from progress.models import UserProgress
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .models import UserProgress
+from course.models import Course,CourseTitle
 from .serializers import UserProgressSerializer
 from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView
-from rest_framework.response import Response
-from rest_framework import status
-from course.models import Course, CourseSubtitle, QuestionTitleSection,CourseTitle
-from .utils import complete_section, answer_question, complete_title
 
+class UserProgressViewSet(viewsets.ViewSet):
+    serializer_class = UserProgressSerializer
 
+    def create(self, request):
+        user_id = request.data.get('user')
+        course_title_id = request.data.get('course_title')
+        
+        if not user_id or not course_title_id:
+            return Response({"error": "user and course_title are required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        course_title = get_object_or_404(CourseTitle, id=course_title_id)
+        
+        # Get or create UserProgress instance
+        progress, created = UserProgress.objects.get_or_create(
+            user_id=user_id, 
+            course_title=course_title
+        )
 
-
-class CompleteTitleView(APIView):
-    def post(self, request, course_id, title_id):
-        user = request.user
+        # Update the viewed status if not already marked
+        if not progress.viewed:
+            progress.viewed = True
+            progress.save()
+            return Response({"message": "Progress registered successfully"}, status=status.HTTP_201_CREATED)
         
-        # Try to get the Course and CourseTitle objects
-        try:
-            course = Course.objects.get(id=course_id)
-            course_title = CourseTitle.objects.get(id=title_id, course=course)
-        except (Course.DoesNotExist, CourseTitle.DoesNotExist):
-            return Response({'message': False}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Mark the title as complete for the user
-        complete_title(user, course, course_title)
-        
-        return Response({'message': True}, status=status.HTTP_200_OK)
-
-class CompleteSectionView(APIView):
-    def post(self, request, course_id, section_id):
-        user = request.user
-        
-        # Try to get the Course and CourseSubtitle objects
-        try:
-            course = Course.objects.get(id=course_id)
-            section = CourseSubtitle.objects.get(id=section_id)
-        except (Course.DoesNotExist, CourseSubtitle.DoesNotExist):
-            return Response({'message': False}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Mark the section as complete for the user
-        complete_section(user, course, section)
-        
-        return Response({'message': True}, status=status.HTTP_200_OK)
+        return Response({"message": "Progress already registered"}, status=status.HTTP_200_OK)
     
+    def list(self, request):
+        user_id = request.query_params.get('user')
+        
+        if not user_id:
+            return Response({"error": "user parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        progress = UserProgress.objects.filter(user_id=user_id)
+        
+        # Calculate total and viewed titles
+        total_titles = CourseTitle.objects.count()
+        viewed_titles = progress.filter(viewed=True).count()
 
-class AnswerQuestionView(APIView):
-    def post(self, request, course_id, question_id):
-        user = request.user
-        section = Course.objects.get(id=course_id)
-        question = QuestionTitleSection.objects.get(id=question_id)
+        if total_titles > 0:
+            viewed_percentage = (viewed_titles / total_titles) * 100
+        else:
+            viewed_percentage = 0
 
-        # ثبت پاسخ کاربر برای سکشن مشخص
-        answer_question(user, section, question)
+        return Response({
+            "total_titles": total_titles,
+            "viewed_titles": viewed_titles,
+            "viewed_percentage": viewed_percentage
+        })
+    
+    def retrieve(self, request, pk=None):
+        course_id = pk
+        user_id = request.query_params.get('user')
+        
+        if not user_id or not course_id:
+            return Response({"error": "user and course parameters are required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            course = Course.objects.get(id=course_id)
+            total_titles = CourseTitle.objects.filter(course=course).count()
+            user_progress = UserProgress.objects.filter(user_id=user_id, course_title__course=course)
+            viewed_titles = user_progress.filter(viewed=True).count()
 
-        return Response({'message': True}, status=status.HTTP_200_OK)
-            
+            if total_titles > 0:
+                viewed_percentage = (viewed_titles / total_titles) * 100
+            else:
+                viewed_percentage = 0
 
-class UserProgressListView(generics.ListAPIView):
-    serializer_class = UserProgressSerializer
-    queryset = UserProgress.objects.all()
- 
-
-
-class UserProgressDetailView(generics.RetrieveAPIView):
-    serializer_class = UserProgressSerializer
-    lookup_field = 'course_id'
-
-    def get_queryset(self):
-        user = self.request.user
-        return UserProgress.objects.filter(user=user)
+            return Response({
+                "course": course.name,
+                "total_titles": total_titles,
+                "viewed_titles": viewed_titles,
+                "viewed_percentage": viewed_percentage
+            })
+        
+        except Course.DoesNotExist:
+            return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)

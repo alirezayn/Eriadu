@@ -7,8 +7,13 @@ router.register(r'list', CourseViewSet)
 router.register(r'titles', CourseTitleViewSet)
 router.register(r'chapters', CourseSubtitleCreateViewSet)
 router.register(r'question',QuestionSectionViewSet)
+router.register(r'Exam',ExamViewSet)
+router.register(r'ExamList',CourseExamViewSet,basename='ExamList')
 router.register(r'sub_section',SubSectionViewSet)
 router.register(r'sub_section_content',SubSectionContentViewSet)
+router.register(r'course-introductions', CourseIntroductionViewSet)
+router.register('intro',CourseIntroViewSet,basename='intro')
+
 
 urlpatterns = [
     path('', include(router.urls)),

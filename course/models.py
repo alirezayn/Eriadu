@@ -11,7 +11,7 @@ class Course(models.Model):
     
 
 class CourseTitle(models.Model):
-    chapter = models.CharField(max_length=255)
+    chapter = models.CharField(max_length=255,blank=False,null=False)
     course = models.ForeignKey(Course, related_name='titles', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -72,3 +72,38 @@ class SubSectionContent(models.Model):
     sub_section_content = models.ForeignKey(SubSection,related_name='sub_section_content',on_delete=models.CASCADE)
 
     
+
+
+class CourseIntroduction(models.Model):
+
+    headline = models.CharField(max_length=500)  # تیتر اصلی
+    description = models.TextField()  # توضیحات کامل محصول یا دوره
+    image = models.ImageField(upload_to='static/course_intro/', null=True, blank=True)  # تصویر معرفی
+    created_at = models.DateTimeField(auto_now_add=True)  # تاریخ ایجاد
+    updated_at = models.DateTimeField(auto_now=True)  # تاریخ به‌روزرسانی
+    course_intro = models.ForeignKey(Course,related_name='course_intro',on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.headline
+    
+
+
+class CourseExam(models.Model):
+    title = models.CharField(max_length=255)
+    option_1 = models.CharField(max_length=255)
+    option_2 = models.CharField(max_length=255)
+    option_3 = models.CharField(max_length=255)
+    option_4 = models.CharField(max_length=255)
+    
+    ANSWER_CHOICES = (
+        ('option_1', 'Option 1'),
+        ('option_2', 'Option 2'),
+        ('option_3', 'Option 3'),
+        ('option_4', 'Option 4'),
+    )
+    
+    answer = models.CharField(max_length=10, choices=ANSWER_CHOICES)
+    exam = models.ForeignKey(Course,related_name='exam',on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.title

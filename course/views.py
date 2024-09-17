@@ -5,16 +5,19 @@ from rest_framework.request import Request
 from rest_framework.generics import ListAPIView,RetrieveAPIView,DestroyAPIView
 from rest_framework.exceptions import NotFound
 from rest_framework.decorators import action
-from .models import Course, CourseTitle, CourseSubtitle,QuestionTitleSection, SubSection, SubSectionContent
+from .models import Course, CourseExam, CourseIntroduction, CourseTitle, CourseSubtitle,QuestionTitleSection, SubSection, SubSectionContent
 from .serializers import (
+    CourseExamSerializer,
+    CourseIntroSerializer,
     CourseSerializer,
     CourseTitleSerializer,
     CourseSubtitleSerializer,
     AddCourseTitleSerializer,
     CourseNameSerializer,
     CourseNameSerializerById,
-    CourseTitleSectionSerializer,QuestioSectionSerialzer,
-    SubSectionContentSerializer,SubSectionSerializer
+    CourseTitleSectionSerializer,
+    ExamSerializer,QuestioSectionSerialzer,
+    SubSectionContentSerializer,SubSectionSerializer,CourseIntroductionSerializer
 )
 
 
@@ -87,3 +90,25 @@ class SubSectionViewSet(viewsets.ModelViewSet):
 class SubSectionContentViewSet(viewsets.ModelViewSet):
     queryset = SubSectionContent.objects.all()
     serializer_class = SubSectionContentSerializer
+
+
+
+class CourseIntroductionViewSet(viewsets.ModelViewSet):
+    queryset = CourseIntroduction.objects.all()
+    serializer_class = CourseIntroSerializer
+
+
+class CourseIntroViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseIntroductionSerializer
+    
+
+
+class ExamViewSet(viewsets.ModelViewSet):
+    queryset = CourseExam.objects.all()
+    serializer_class = ExamSerializer
+
+
+class CourseExamViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseExamSerializer

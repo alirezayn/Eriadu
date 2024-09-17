@@ -23,8 +23,10 @@ def answer_question(user, section, question):
 def complete_title(user, course, course_title):
     # Get or create progress entry
     progress, created = UserProgress.objects.get_or_create(user=user, course=course)
-    
+
     # Add the title to completed titles if not already added
     if course_title not in progress.completed_title.all():
         progress.completed_title.add(course_title)
-        progress.update_progress()  # Update the progress percentage
+
+    # Update the progress, including progress_titles
+    progress.update_progress()
