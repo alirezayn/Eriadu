@@ -70,7 +70,7 @@ class CourseNameListView(ListAPIView):
 
 
 class CourseNameListViewById(RetrieveAPIView):
-    serializer_class =CourseNameSerializerById
+    serializer_class = CourseNameSerializerById
     lookup_field = 'id'
 
     def get_object(self):
@@ -112,3 +112,6 @@ class ExamViewSet(viewsets.ModelViewSet):
 class CourseExamViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseExamSerializer
+
+
+

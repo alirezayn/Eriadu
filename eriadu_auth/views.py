@@ -37,10 +37,10 @@ class CreateUserView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         phone = request.data.get('user_phone')
         user_exists = user.objects.filter(user_phone=phone).first()
-        former_otp = OTP.objects.filter(user_id=user_exists.id)
-        if former_otp:
-            former_otp.delete()
+    
         if user_exists:
+            former_otp = OTP.objects.filter(user_id=user_exists.id)
+            former_otp.delete()
             otp_code = str(random.randint(100000, 999999))
             otp_object = OTP.objects.create(user_id=user_exists.id,otp_code=otp_code)
             return Response({
