@@ -22,6 +22,7 @@ class SubSectionContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubSectionContent
         fields = '__all__'
+        # fields = ['id','content','priority','code']
 
 
 class SubSectionSerializer(serializers.ModelSerializer):
@@ -32,10 +33,7 @@ class SubSectionSerializer(serializers.ModelSerializer):
         # fields = '__all__'
 
 class CourseSubtitleSerializer(serializers.ModelSerializer):
-    # course_name = serializers.SerializerMethodField()
-    # course_title = serializers.SerializerMethodField()
     name = serializers.CharField(source='section')
-    # section = serializers.PrimaryKeyRelatedField(queryset=QuestionTitleSection.objects.all())
     sub_section = SubSectionSerializer(many=True,read_only=True)
     class Meta:
         model = CourseSubtitle

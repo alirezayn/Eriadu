@@ -69,10 +69,12 @@ class SubSection(models.Model):
 
 class SubSectionContent(models.Model):
     content = models.TextField()
+    code = models.BooleanField(default=False)
+    priority = models.IntegerField(default=0)
     sub_section_content = models.ForeignKey(SubSection,related_name='sub_section_content',on_delete=models.CASCADE)
-
     
-
+    class Meta:
+        ordering = ['priority']  
 
 class CourseIntroduction(models.Model):
 

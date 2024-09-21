@@ -18,7 +18,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
+    def create_superuser(self, user_phone, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -27,7 +27,7 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self.create_user(email, password, **extra_fields)
+        return self.create_user(user_phone, password, **extra_fields)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     phone_validator = RegexValidator(regex=r'^\d{11}$', message="Phone number must be 11 digits.")
@@ -71,9 +71,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         refresh['is_active'] = self.is_active
         refresh['user_phone'] = self.user_phone
         return refresh
-
-
-
 
 
 class OTP(models.Model):
