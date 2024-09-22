@@ -187,6 +187,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://tosegar.vercel.app'
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Allow all methods
