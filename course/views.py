@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -5,6 +6,7 @@ from rest_framework.request import Request
 from rest_framework.generics import ListAPIView,RetrieveAPIView,DestroyAPIView
 from rest_framework.exceptions import NotFound
 from rest_framework.decorators import action
+
 from .models import Course, CourseExam, CourseIntroduction, CourseTitle, CourseSubtitle,QuestionTitleSection, SubSection, SubSectionContent
 from .serializers import (
     CourseExamSerializer,
@@ -16,10 +18,11 @@ from .serializers import (
     CourseNameSerializer,
     CourseNameSerializerById,
     CourseTitleSectionSerializer,
-    ExamSerializer,QuestioSectionSerialzer,
+    ExamSerializer,QuestioSectionSerialzer,CourseTitleQuestionSerializer,
     SubSectionContentSerializer,SubSectionSerializer,CourseIntroductionSerializer
 )
-
+import subprocess
+from rest_framework.decorators import api_view
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
@@ -112,6 +115,24 @@ class ExamViewSet(viewsets.ModelViewSet):
 class CourseExamViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseExamSerializer
+
+
+
+class TitleQuestionListView(RetrieveAPIView):
+    # queryset = CourseTitle.objects.all()
+    serializer_class = CourseTitleQuestionSerializer
+
+    def get_object(self):
+        request: Request = self.request
+        title_id = request.query_params.get('id')
+
+        if not title_id:
+            raise NotFound(detail="Title ID is required")
+
+        try:
+            return CourseTitle.objects.get(id=title_id)
+        except CourseTitle.DoesNotExist:
+            raise NotFound(detail="CourseTitle not found")
 
 
 

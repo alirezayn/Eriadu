@@ -19,5 +19,10 @@ urlpatterns = [
     path('', include(router.urls)),
     path('category/',view=CourseNameListView.as_view(),name='course_list'),
     path('category_by_id/',view=CourseNameListViewById.as_view(),name='course_by_id'),
-    path('section/',view=SectionTitleViewSet.as_view(),name='section')
+    path('section/',view=SectionTitleViewSet.as_view(),name='section'),
+    path('question_list/',view=TitleQuestionListView.as_view(),name='question_list'),
+    
 ]
+
+
+

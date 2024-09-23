@@ -156,3 +156,10 @@ class CourseExamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ['id','name','exam']
+
+
+class CourseTitleQuestionSerializer(serializers.ModelSerializer):
+    question = QuestionTitleSectionSerializer(many=True, read_only=True) 
+    class Meta:
+        model = CourseTitle
+        fields = ['question']

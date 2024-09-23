@@ -23,6 +23,8 @@ urlpatterns = [
     path('auth/', include('eriadu_auth.urls')),
     path('user/', include('eriadu_auth.urls')),
     path('course/',include('course.urls')),
-    path('progress/',include('progress.urls'))
+    path('progress/',include('progress.urls')),
+    path('compiler/',include('complier.urls')),
+
 
 ]
