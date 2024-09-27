@@ -81,20 +81,27 @@ def chat_gpt(request):
         return JsonResponse({'error': 'No code provided'}, status=400)
 
     try:
-        # تابعی برای استریم کردن پاسخ
+        # تابعی برای جمع‌آوری پاسخ
         def gpt_stream():
             stream = client.chat.completions.create(
-                model="gpt-4",  # یا مدل مورد نظر خود
+                model="gpt-3.5-turbo",  # یا مدل مورد نظر خود
                 messages=[{"role": "user", "content": f"{code}\nخروجی کد رو با پایتون بده"}],  # پیام ورودی
                 stream=True
             )
+            response_content = ''
             for chunk in stream:
                 if 'content' in chunk['choices'][0]['delta']:
-                    # ارسال تکه‌های استریم شده
-                    yield chunk['choices'][0]['delta']['content']
+                    # اضافه کردن تکه‌های استریم شده به پاسخ
+                    response_content += chunk['choices'][0]['delta']['content']
+            return response_content
 
-        # استفاده از StreamingHttpResponse برای استریم کردن پاسخ
-        return StreamingHttpResponse(gpt_stream(), content_type='text/plain')
+        # جمع‌آوری پاسخ
+        answer = gpt_stream()
+
+        return JsonResponse({
+            "answer": answer,
+            "success": True,
+        })
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)

@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from course.models import Course
 from course.serializers import CourseSerializer
+from payment.models import Factor
 CustomUser = get_user_model()
 
 class CustomUserRegisterSerializer(serializers.ModelSerializer):
@@ -51,3 +52,9 @@ class CustomUserCourseSerializer(serializers.ModelSerializer):
             if user.is_pro:
                 return Course.objects.all()
             return user.courses.all()
+
+
+class UserFactorDetails (serializers.ModelSerializer):
+    class Meta:
+        model = Factor
+        fields = '__all__'

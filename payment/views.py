@@ -1,0 +1,113 @@
+from django.shortcuts import render,get_object_or_404
+from django.http import HttpRequest, HttpResponse, JsonResponse,HttpResponseRedirect,Http404
+from django.middleware.csrf import get_token
+import uuid
+from eriadu_auth.models import CustomUser
+from django.views.decorators.csrf import csrf_exempt
+from course.models import Course
+from .models import Factor,CoursePlan
+# Create your views here.
+import requests
+from rest_framework.decorators import api_view
+url_payping = 'https://api.payping.ir/v2/pay' 
+@api_view(['GET'])
+def get_csrf_token(request):
+    """
+    این ویو یک CSRF token جدید تولید کرده و به کاربر بازمی‌گرداند.
+    """
+    csrf_token = get_token(request)  # تولید CSRF Token
+    return JsonResponse({'csrfToken': csrf_token})
+# d0pda||waAZg21Wo
+
+def payment(request: HttpRequest):
+    
+    # get_object_or_404(CustomUser,user_phone=phone)
+    # get_object_or_404(Course,id=course)
+    # get_object_or_404(CoursePlan,id=plan)
+
+
+    if request.method == 'GET':
+        data = {
+            "phone": request.GET.get('phone'),
+            "desc": request.GET.get('desc'),
+            "amount": request.GET.get('amount'),
+            "name": request.GET.get('name'),
+            "returnUrl": request.GET.get('returnUrl')
+        }
+        phone = request.GET.get('phone')
+        course = request.GET.get('course')
+        plan = request.GET.get('plan')
+        print(phone,course,plan)
+        # if phone and course and plan:
+        user = CustomUser.objects.get(user_phone = phone)
+        course_id = Course.objects.get(id=course)
+        plan_id = CoursePlan.objects.get(id=plan)
+        if user and course_id and plan_id:
+            Factor.objects.create(
+                user = user,
+                course=course_id,
+                payed=False,
+                plan=plan_id,
+            )
+            return render(request=request, template_name='shop.html', context=data)
+        else:
+            return HttpResponse("user or course or plan didnt retrun")
+
+    if request.method == "POST":
+        print(request.POST)
+        data = {
+            "amount": request.POST.get('amount'),
+            "payerIdentity": request.POST.get('phone'),
+            "payerName": request.POST.get('name'),
+            "description": request.POST.get('desc'),
+            "returnUrl": "https://alireza.pythonanywhere.com/payment/factor_payed/",
+            "clientRefId": str(client_ref_id)
+            }
+        
+        # Factor.objects.create(
+        #         amount =data['amount'],
+        #         payer_identity = data['payerIdentity'],
+        #         payer_name = data['payerName'],
+        #         description = data['description'],
+        #         clientrefid = data['clientRefId']
+        #         )
+        
+
+
+        headers = {
+            "Authorization": "Bearer uCb_w5gEIm5ZBVeZgVYkaeCJtDOy49XY1mM_ls3-Wqs",
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        }
+
+        resonse = requests.post(url_payping,json=data,headers=headers)
+        print(resonse.text)
+        if resonse.status_code == 200:
+            code = resonse.json()
+            return HttpResponseRedirect(f"https://api.payping.ir/v2/pay/gotoipg/{code["code"]}") 
+
+@csrf_exempt
+def payment_callback(request:HttpRequest):
+    if request.method == 'POST':
+        code = request.POST.get('code')
+        refid = request.POST.get('refid')
+        clientrefid = request.POST.get('clientrefid')
+        cardnumber = request.POST.get('cardnumber')
+        cardhashpan = request.POST.get('cardhashpan')
+        
+        if cardnumber and cardhashpan:
+            payment_id = Factor.objects.get(clientrefid=clientrefid)
+            # Factor.objects.create(
+            #     payment=payment_id,
+            #     is_payed=True,
+            #     code=code,
+            #     refid=refid,
+            #     clientrefid=clientrefid,
+            #     cardnumber=cardnumber,
+            #     cardhashpan=cardhashpan,
+            # )
+
+            return HttpResponse("Payment successful")
+        else:
+            # پرداخت ناموفق
+            return HttpResponse("Payment failed")

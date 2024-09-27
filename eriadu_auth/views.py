@@ -182,3 +182,9 @@ class UserCourseListApiView(generics.ListAPIView):
             return user_object
         else:
             return user.objects.all()
+        
+
+
+class AllUserFactorDetails(viewsets.ModelViewSet):
+    queryset = Factor.objects.all()
+    serializer_class = UserFactorDetails
