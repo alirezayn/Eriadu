@@ -135,14 +135,8 @@ def factor_view(request:HttpRequest):
 
 
 
-@csrf_exempt
 def payment_callback(request: HttpRequest):
     try:
-        # بررسی درخواست GET (برای دیباگ در صورت لزوم)
-        if request.method == "GET":
-            print("GET request received:", request.GET)
-            return HttpResponse("GET requests are not supported for this endpoint")
-
         # بررسی درخواست POST
         if request.method == 'POST':
             print("POST data received:", request.POST)
