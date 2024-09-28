@@ -138,50 +138,35 @@ def factor_view(request:HttpRequest):
 @csrf_exempt
 @require_POST
 def payment_callback(request: HttpRequest):
-    try:
-        # بررسی درخواست POST
-        if request.method == 'POST':
-            print("POST data received:", request.POST)
 
-            # دریافت فیلدهای ارسال شده
-            code = request.POST.get('code')
-            refid = request.POST.get('refid')
-            clientrefid = request.POST.get('clientrefid')
-            cardnumber = request.POST.get('cardnumber')
-            cardhashpan = request.POST.get('cardhashpan')
+    if request.method == 'POST':
+        print("POST data received:", request.POST)
 
-            # اطمینان از اینکه همه فیلدهای ضروری وجود دارند
+        code = request.POST.get('code')
+        refid = request.POST.get('refid')
+        clientrefid = request.POST.get('clientrefid')
+        cardnumber = request.POST.get('cardnumber')
+        cardhashpan = request.POST.get('cardhashpan')
+        if cardnumber or cardhashpan :
             if not all([code, refid, clientrefid]):
-                return HttpResponse("Missing required fields", status=400)
+                factor = Factor.objects.get(clientrefid=clientrefid)
+                factor.payed = True
+                factor.refid = refid
+                factor.payment_code = code
+                factor.save()
 
-            # بررسی موفقیت یا شکست پرداخت بر اساس فیلدهای cardnumber و cardhashpan
-            if cardnumber and cardhashpan:
-                try:
-                    factor = Factor.objects.get(clientrefid=clientrefid)
-                    factor.payed = True
-                    factor.refid = refid
-                    factor.payment_code = code
-                    factor.save()
+                data = {
+                    "refId": refid,
+                    "amount": factor.amount
+                }
+                headers = {
+                    "Authorization": "Bearer uCb_w5gEIm5ZBVeZgVYkaeCJtDOy49XY1mM_ls3-Wqs",
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                    }
+                repsponse = requests.post('https://api.payping.ir/v2/pay/verify',json=data,headers=headers)
+                if repsponse.status_code == 200:
                     return HttpResponse("Payment successful")
-                except Factor.DoesNotExist:
-                    return HttpResponse(f"No Factor found with clientrefid: {clientrefid}", status=404)
             else:
-                # پرداخت ناموفق
-                return HttpResponse("Payment failed: Missing card details")
-    except Exception as e:
-        # جمع‌آوری جزئیات خطا و ارسال آن در قالب HTML
-        error_trace = traceback.format_exc()
-        error_html = f"""
-        <html>
-        <head><title>Error Occurred</title></head>
-        <body>
-            <h1>An error occurred in the payment callback</h1>
-            <h2>Error details:</h2>
-            <pre>{str(e)}</pre>
-            <h3>Traceback:</h3>
-            <pre>{error_trace}</pre>
-        </body>
-        </html>
-        """
-        return HttpResponse(error_html, content_type="text/html", status=500)
-
+                return HttpResponse("Payment Failed")
+         
