@@ -207,3 +207,7 @@ CORS_ALLOW_METHODS = [
 CORS_ALLOW_CREDENTIALS = True
 
 AUTH_USER_MODEL = 'eriadu_auth.CustomUser'
+
+CSRF_TRUSTED_ORIGINS = ['https://alirezayn.pythonanywhere.com']
+CSRF_COOKIE_HTTPONLY = False
+
