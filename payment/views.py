@@ -148,12 +148,13 @@ def payment_callback(request: HttpRequest):
         cardnumber = request.POST.get('cardnumber')
         cardhashpan = request.POST.get('cardhashpan')
         if cardnumber or cardhashpan :
-            if not all([code, refid, clientrefid]):
                 factor = Factor.objects.get(clientrefid=clientrefid)
                 factor.payed = True
                 factor.refid = refid
                 factor.payment_code = code
                 factor.save()
+
+                print(factor.amount,refid)
 
                 data = {
                     "refId": refid,
@@ -164,9 +165,9 @@ def payment_callback(request: HttpRequest):
                     "Accept": "application/json",
                     "Content-Type": "application/json"
                     }
-                repsponse = requests.post('https://api.payping.ir/v2/pay/verify',json=data,headers=headers)
-                if repsponse.status_code == 200:
+                response = requests.post('https://api.payping.ir/v2/pay/verify',json=data,headers=headers)
+                if response.status_code == 200:
                     return HttpResponse("Payment successful")
-            else:
-                return HttpResponse("Payment Failed")
+            
+        return HttpResponse("Payment Failed")
          
