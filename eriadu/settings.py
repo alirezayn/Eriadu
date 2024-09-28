@@ -27,8 +27,8 @@ SECRET_KEY = 'django-insecure-0)%^ccy9)k&eu*up17h&sd*7&1!9v6ci*bx-3)slm^2g_=#!=z
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '192.168.11.2'
-    # 'alirezayn.pythonanywhere.com'
+    # '192.168.11.2'
+    'alirezayn.pythonanywhere.com'
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -186,7 +186,7 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'http://192.168.11.2:8000',
+    # 'http://192.168.11.2:8000',
     'https://tosegar.vercel.app'
 ]
 
