@@ -1,3 +1,4 @@
+import traceback
 from django.shortcuts import render,get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse,HttpResponseRedirect,Http404
 from django.middleware.csrf import get_token
@@ -135,28 +136,56 @@ def factor_view(request:HttpRequest):
 
 
 @csrf_exempt
-def payment_callback(request:HttpRequest):
-    if request.method == "GET":
-        print(request.GET)
+def payment_callback(request: HttpRequest):
+    try:
+        # بررسی درخواست GET (برای دیباگ در صورت لزوم)
+        if request.method == "GET":
+            print("GET request received:", request.GET)
+            return HttpResponse("GET requests are not supported for this endpoint")
 
+        # بررسی درخواست POST
+        if request.method == 'POST':
+            print("POST data received:", request.POST)
 
-    print(request.POST)
-    if request.method == 'POST':
-        code = request.POST.get('code')
-        refid = request.POST.get('refid')
-        clientrefid = request.POST.get('clientrefid')
-        cardnumber = request.POST.get('cardnumber')
-        cardhashpan = request.POST.get('cardhashpan')
-        
-        if cardnumber and cardhashpan:
-            factor = Factor.objects.get(clientrefid=clientrefid)
-            factor.payed = True
-            factor.refid = refid
-            factor.payment_code = code
-            factor.save()
-            return HttpResponse("Payment successful")
-        else:
-            # پرداخت ناموفق
-            return HttpResponse("Payment failed")
-        
+            # دریافت فیلدهای ارسال شده
+            code = request.POST.get('code')
+            refid = request.POST.get('refid')
+            clientrefid = request.POST.get('clientrefid')
+            cardnumber = request.POST.get('cardnumber')
+            cardhashpan = request.POST.get('cardhashpan')
+
+            # اطمینان از اینکه همه فیلدهای ضروری وجود دارند
+            if not all([code, refid, clientrefid]):
+                return HttpResponse("Missing required fields", status=400)
+
+            # بررسی موفقیت یا شکست پرداخت بر اساس فیلدهای cardnumber و cardhashpan
+            if cardnumber and cardhashpan:
+                try:
+                    factor = Factor.objects.get(clientrefid=clientrefid)
+                    factor.payed = True
+                    factor.refid = refid
+                    factor.payment_code = code
+                    factor.save()
+                    return HttpResponse("Payment successful")
+                except Factor.DoesNotExist:
+                    return HttpResponse(f"No Factor found with clientrefid: {clientrefid}", status=404)
+            else:
+                # پرداخت ناموفق
+                return HttpResponse("Payment failed: Missing card details")
+    except Exception as e:
+        # جمع‌آوری جزئیات خطا و ارسال آن در قالب HTML
+        error_trace = traceback.format_exc()
+        error_html = f"""
+        <html>
+        <head><title>Error Occurred</title></head>
+        <body>
+            <h1>An error occurred in the payment callback</h1>
+            <h2>Error details:</h2>
+            <pre>{str(e)}</pre>
+            <h3>Traceback:</h3>
+            <pre>{error_trace}</pre>
+        </body>
+        </html>
+        """
+        return HttpResponse(error_html, content_type="text/html", status=500)
 
