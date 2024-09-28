@@ -148,6 +148,7 @@ def payment_callback(request:HttpRequest):
             factor.payed = True
             factor.refid = refid
             factor.payment_code = code
+            factor.save()
             return HttpResponse("Payment successful")
         else:
             # پرداخت ناموفق
