@@ -168,6 +168,6 @@ def payment_callback(request: HttpRequest):
             response = requests.post('https://api.payping.ir/v2/pay/verify',json=data,headers=headers)
             if response.status_code == 200:
                 return HttpResponse("Payment successful")
-            
+        print(code,cardnumber)
         return HttpResponse("Payment Failed")
          
