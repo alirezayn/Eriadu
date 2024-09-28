@@ -136,6 +136,10 @@ def factor_view(request:HttpRequest):
 
 @csrf_exempt
 def payment_callback(request:HttpRequest):
+    if request.method == "GET":
+        print(request.GET)
+
+
     print(request.POST)
     if request.method == 'POST':
         code = request.POST.get('code')
