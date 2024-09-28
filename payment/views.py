@@ -116,7 +116,7 @@ def factor_view(request:HttpRequest):
             "payerIdentity": factor.payer_identity,
             "payerName": factor.payer_name,
             "description": "پرداخت برای خرید دوره",
-            "returnUrl": "http://192.168.11.2:8000/payment/factor_payed/",
+            "returnUrl": "https://alirezayn.pythonanywhere.com/payment/factor_payed/",
             "clientRefId": str(factor.clientrefid)
             }
         headers = {
