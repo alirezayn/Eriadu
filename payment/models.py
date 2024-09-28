@@ -18,8 +18,8 @@ class CoursePlan(models.Model):
             return f"پلن {self.month} ماهه"
 
 class Factor(models.Model):
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     payed = models.BooleanField(default=False)
     plan = models.ForeignKey(CoursePlan, on_delete=models.CASCADE)
@@ -29,8 +29,7 @@ class Factor(models.Model):
     payment_code = models.CharField(max_length=255,null=True,blank=True)
     refid = models.CharField(max_length=255,null=True,blank=True)
     clientrefid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, help_text="کد ارجاع پی‌پینگ")
-    cardnumber = models.CharField(max_length=255,null=True,blank=True)
-    cardhashpan = models.CharField(max_length=255,null=True,blank=True)
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.user_phone} فاکتور"

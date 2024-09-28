@@ -1,38 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>صفحه فاکتور</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    {{ phone }}
-    {{ name }}
-    {{ amount }}
-    <!-- <form action="/payment/factor/?phone=09398231219&name=علیرضا&amount=1000&desc=پراخت تستی&returnUrl=https://alireza.pythonanywhere.com" method="post"> -->
-        <!-- </form> -->
-         <!-- {% csrf_token %} -->
-         <form action="/payment/factor/?desc=پراخت تستی&phone=09398231219&name=علیرضا یوسف نژاد&amount=1000" method="post">
+<body class="bg-slate-50 flex items-center justify-center min-h-screen">
+
+    <div class="w-full h-full sm:h-auto sm:w-full max-w-md p-6 bg-white rounded-lg shadow-md border border-gray-300">
+        <h1 class="text-xl font-bold mb-4 text-center">فاکتور پرداخت</h1>
+    <form action="/payment/factor/?clientrefid={{factor.clientrefid}}" method="post">
             {% csrf_token %}
-            
-            <label for="phone">شماره تلفن:</label>
-            <input type="text" id="phone" name="phone" value="{{phone}}" required >
-            
-            <label for="name">نام:</label>
-            <input type="text" id="name" name="name" value="{{name}}" required>
-            
-            <label for="amount">مقدار:</label>
-            <input type="number" id="amount" name="amount" value="{{amount}}" required>
-            
-            <label for="desc">توضیحات:</label>
-            <input type="text" id="desc" name="desc" value="{{desc}}" required>
-    
-
-
-            <button type="submit">پرداخت</button>
-        <!-- <button type="submit">پرداخت</button> -->
-    
-
+        <div class="mb-4">
+            <p class="text-gray-700">شناسه پرداخت‌کننده: <span class="font-semibold">{{factor.payer_identity}}</span></p>
+        </div>
+        
+        <div class="mb-4">
+            <p class="text-gray-700">نام پرداخت‌کننده: <span class="font-semibold">{{factor.payer_name}}</span></p>
+        </div>
+        
+        <div class="mb-4">
+            <p class="text-gray-700">مبلغ: <span class="font-semibold">{{factor.amount}} تومان</span></p>
+        </div>
+        
+        <div class="mb-4">
+            <p class="text-gray-700">نام درس: <span class="font-semibold">{{factor.course.name}}</span></p>
+        </div>
+        
+        <div class="mb-4">
+            <p class="text-gray-700">نوع طرح: 
+                <span class="font-semibold">
+                    {% if factor.plan.month == 0 %}
+                    {{factor.plan.year}} ساله
+                    {% else %}
+                    {{factor.plan.month}} ماهه
+                    {% endif %}
+                </span>
+            </p>
+        </div>
+        
+        <div class="text-center">
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full">پرداخت</button>
+        </div>
     </form>
+    </div>
+
 </body>
 </html>
