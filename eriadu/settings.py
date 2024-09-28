@@ -28,7 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     # '192.168.11.2'
-    'alirezayn.pythonanywhere.com'
+    'alirezayn.pythonanywhere.com',
+    'api.payping.ir'
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -208,6 +209,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 AUTH_USER_MODEL = 'eriadu_auth.CustomUser'
 
-CSRF_TRUSTED_ORIGINS = ['https://alirezayn.pythonanywhere.com']
+CSRF_TRUSTED_ORIGINS = ['https://alirezayn.pythonanywhere.com','https://api.payping.ir']
 CSRF_COOKIE_HTTPONLY = False
 
