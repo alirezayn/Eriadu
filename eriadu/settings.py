@@ -188,7 +188,8 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     # 'http://192.168.11.2:8000',
-    'https://tosegar.vercel.app'
+    'https://tosegar.vercel.app',
+    'https://api.payping.ir'
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True

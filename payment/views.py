@@ -1,14 +1,15 @@
 import traceback
 from django.shortcuts import render,get_object_or_404
 from django.http import HttpRequest, HttpResponse, JsonResponse,HttpResponseRedirect,Http404
+from django.views.decorators.http import require_POST
 from django.middleware.csrf import get_token
 import uuid
 from eriadu_auth.models import CustomUser
 from django.views.decorators.csrf import csrf_exempt
 from course.models import Course
 from .models import Factor,CoursePlan
-# Create your views here.
 import requests
+
 import json
 from rest_framework.decorators import api_view
 url_payping = 'https://api.payping.ir/v2/pay' 
@@ -134,7 +135,8 @@ def factor_view(request:HttpRequest):
 
 
 
-
+@csrf_exempt
+@require_POST
 def payment_callback(request: HttpRequest):
     try:
         # بررسی درخواست POST
