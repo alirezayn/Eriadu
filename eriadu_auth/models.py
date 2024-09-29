@@ -97,18 +97,22 @@ class LimitedAccess(models.Model):
     end_date = models.DateTimeField()
 
     def get_start_date_jalali(self):
-        return GregorianToJalali(
+        start_date = GregorianToJalali(
             gyear=self.start_date.year, 
             gmonth=self.start_date.month, 
             gday=self.start_date.day
         )
+        return f"{start_date.jyear}/{start_date.jmonth}/{start_date.jday}"
+
     
     def get_end_date_jalali(self):
-        return GregorianToJalali(
+        end_date = GregorianToJalali(
             gyear=self.end_date.year, 
             gmonth=self.end_date.month, 
             gday=self.end_date.day
         )
+        return f"{end_date.jyear}/{end_date.jmonth}/{end_date.jday}"
+    
     
     def __str__(self) -> str:
         start_jalali = self.get_start_date_jalali()
