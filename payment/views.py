@@ -167,6 +167,7 @@ def payment_callback(request: HttpRequest):
                     end_date = yearly_access
                 )
                 user.limited = new
+                user.save()
             elif factor.plan.month > 0:
                 today = datetime.today()
                 monthly_access = today + relativedelta(month=factor.plan.month)
@@ -174,6 +175,7 @@ def payment_callback(request: HttpRequest):
                     end_date = monthly_access
                 )
                 user.limited = new
+                user.save()
 
             data = {
                 "refId": refid,
