@@ -163,15 +163,17 @@ def payment_callback(request: HttpRequest):
             elif factor.plan.year > 0:
                 today = datetime.today()
                 yearly_access = today + relativedelta(years=1)
-                LimitedAccess.objects.create(
+                new = LimitedAccess.objects.create(
                     end_date = yearly_access
                 )
+                user.limited = new
             elif factor.plan.month > 0:
                 today = datetime.today()
                 monthly_access = today + relativedelta(month=factor.plan.month)
-                LimitedAccess.objects.create(
+                new = LimitedAccess.objects.create(
                     end_date = monthly_access
                 )
+                user.limited = new
 
             data = {
                 "refId": refid,
