@@ -31,10 +31,12 @@
         <div class="mb-4">
             <p class="text-gray-700">نوع طرح: 
                 <span class="font-semibold">
-                    {% if factor.plan.month == 0 %}
-                    {{factor.plan.year}} ساله
+                    {% if factor.plan.unlimited %}
+                        پلن نامحدود
+                    {% elif factor.plan.month == 0 %}
+                        {{factor.plan.year}} ساله
                     {% else %}
-                    {{factor.plan.month}} ماهه
+                        {{factor.plan.month}} ماهه
                     {% endif %}
                 </span>
             </p>
