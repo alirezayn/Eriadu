@@ -96,7 +96,21 @@ class LimitedAccess(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField()
 
+    def get_start_date_jalali(self):
+        return GregorianToJalali(
+            gyear=self.start_date.year, 
+            gmonth=self.start_date.month, 
+            gday=self.start_date.day
+        )
+    
+    def get_end_date_jalali(self):
+        return GregorianToJalali(
+            gyear=self.end_date.year, 
+            gmonth=self.end_date.month, 
+            gday=self.end_date.day
+        )
+    
     def __str__(self) -> str:
-        return f" از تاریخ{GregorianToJalali(gyear=self.start_date.year,gmonth=self.start_date.month,gday=self.start_date.day)} تا {GregorianToJalali(gyear=self.end_date.year,gmonth=self.end_date.month,gday=self.end_date.day)}"
-
-
+        start_jalali = self.get_start_date_jalali()
+        end_jalali = self.get_end_date_jalali()
+        return f"از تاریخ {start_jalali} تا {end_jalali}"
