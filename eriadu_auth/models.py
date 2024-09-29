@@ -6,6 +6,11 @@ from django.conf import settings
 from django.core.validators import RegexValidator
 from rest_framework_simplejwt.tokens import RefreshToken
 from course.models import Course
+
+
+
+
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, user_phone, password=None, **extra_fields):
         if not user_phone:
@@ -30,6 +35,8 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(user_phone, password, **extra_fields)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+
+
     phone_validator = RegexValidator(regex=r'^\d{11}$', message="Phone number must be 11 digits.")
     username = models.CharField(unique=True,null=True,max_length=50)
     email = models.EmailField(unique=True,null=True)
@@ -41,6 +48,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_pro = models.BooleanField(default=False)
     courses = models.ManyToManyField(Course, related_name='allowed_users', blank=True)
     image_profile = models.ImageField(upload_to='static/users/profile/',blank=True)
+    unlimited = models.BooleanField(default=False)
+    limited = models.ForeignKey('LimitedAccess',on_delete=models.CASCADE,null=True,blank=True)
+
+
+
     groups = models.ManyToManyField(
         Group,
         related_name='customuser_set',  # Adding related_name to avoid conflicts
@@ -77,3 +89,11 @@ class OTP(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     otp_code = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+
+class LimitedAccess(models.Model):
+    start_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField()
+
+

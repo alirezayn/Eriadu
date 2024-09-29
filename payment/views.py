@@ -4,12 +4,13 @@ from django.http import HttpRequest, HttpResponse, JsonResponse,HttpResponseRedi
 from django.views.decorators.http import require_POST
 from django.middleware.csrf import get_token
 import uuid
-from eriadu_auth.models import CustomUser
+from eriadu_auth.models import CustomUser,LimitedAccess
 from django.views.decorators.csrf import csrf_exempt
 from course.models import Course
+from datetime import datetime
 from .models import Factor,CoursePlan
 import requests
-
+from dateutil.relativedelta import relativedelta
 import json
 from rest_framework.decorators import api_view
 url_payping = 'https://api.payping.ir/v2/pay' 
@@ -86,12 +87,10 @@ def testPaymeny(request:HttpRequest):
         clientrefid = uuid.uuid4()
         buyer = CustomUser.objects.get(id=response_body['user_id'])
         plan_id = CoursePlan.objects.get(id=response_body['plan_id'])
-        course = Course.objects.get(id=response_body['course'])
-
+        # course = Course.objects.get(id=response_body['course'])
         Factor.objects.create(
             user= buyer,
             plan = plan_id,
-            course = course,
             amount = response_body['amount'],
             payer_identity = response_body['payer_identity'],
             payer_name = response_body['payer_name'],
@@ -105,6 +104,7 @@ def testPaymeny(request:HttpRequest):
 
 
 def factor_view(request:HttpRequest):
+
     if request.method == "GET":
         query = request.GET.get('clientrefid')
         factor = Factor.objects.get(clientrefid=query)
@@ -154,7 +154,23 @@ def payment_callback(request: HttpRequest):
             factor.payment_code = code
             factor.save()
 
-            print(factor.amount,refid)
+            user = CustomUser.objects.get(user_phone=factor.user.user_phone)
+            
+            if factor.plan.unlimited:
+                user.is_pro = True
+                user.save()
+            elif factor.plan.year > 0:
+                today = datetime.today()
+                yearly_access = today + relativedelta(years=1)
+                LimitedAccess.objects.create(
+                    end_date = yearly_access
+                )
+            elif factor.plan.month > 0:
+                today = datetime.today()
+                monthly_access = today + relativedelta(month=factor.plan.month)
+                LimitedAccess.objects.create(
+                    end_date = monthly_access
+                )
 
             data = {
                 "refId": refid,
