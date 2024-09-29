@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.validators import RegexValidator
 from rest_framework_simplejwt.tokens import RefreshToken
 from course.models import Course
-
+from jdatetime import GregorianToJalali
 
 
 
@@ -95,5 +95,8 @@ class OTP(models.Model):
 class LimitedAccess(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField()
+
+    def __str__(self) -> str:
+        return f" از تاریخ{GregorianToJalali(gyear=self.start_date.year,gmonth=self.start_date.month,gday=self.start_date.day)} تا {GregorianToJalali(gyear=self.end_date.year,gmonth=self.end_date.month,gday=self.end_date.day)}"
 
 
