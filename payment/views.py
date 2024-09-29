@@ -158,6 +158,7 @@ def payment_callback(request: HttpRequest):
             
             if factor.plan.unlimited:
                 user.is_pro = True
+                user.unlimited =True
                 user.save()
             elif factor.plan.year > 0:
                 today = datetime.today()
