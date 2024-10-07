@@ -220,7 +220,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 AUTH_USER_MODEL = 'eriadu_auth.CustomUser'
 
-CSRF_TRUSTED_ORIGINS = ['https://alirezayn.pythonanywhere.com','https://api.payping.ir']
+CSRF_TRUSTED_ORIGINS = ['https://alirezayn.pythonanywhere.com','https://api.payping.ir','https://api.sms.ir']
 CSRF_COOKIE_HTTPONLY = False
 
 ASGI_APPLICATION = "eriadu.asgi.application"
