@@ -28,8 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     # '192.168.11.2',
-    'alirezayn.pythonanywhere.com',
-    'api.payping.ir'
+    # 'alirezayn.pythonanywhere.com',
+    # 'api.payping.ir'
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'drf_spectacular',
     'eriadu_auth',
     'course',
     'corsheaders',
@@ -88,27 +89,27 @@ WSGI_APPLICATION = 'eriadu.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # MySQL backend
-        'NAME': 'alirezayn$eriadu',          # Name of your MySQL database
-        'USER': 'alirezayn',               # MySQL username
-        'PASSWORD': 'Adidas:/0631',           # MySQL password
-        'HOST': 'alirezayn.mysql.pythonanywhere-services.com',                   # Database host (use 'localhost' if it's local)
-        'PORT': '3306',                        # MySQL port (default is 3306)
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'"
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',  # MySQL backend
+#         'NAME': 'alirezayn$eriadu',          # Name of your MySQL database
+#         'USER': 'alirezayn',               # MySQL username
+#         'PASSWORD': 'Adidas:/0631',           # MySQL password
+#         'HOST': 'alirezayn.mysql.pythonanywhere-services.com',                   # Database host (use 'localhost' if it's local)
+#         'PORT': '3306',                        # MySQL port (default is 3306)
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'"
+#         }
+#     }
+# }
 
 
 
@@ -161,6 +162,7 @@ STATIC_ROOT = '/home/alirezayn/Eriadu/static'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
@@ -184,7 +186,13 @@ SIMPLE_JWT = {
 
     'JTI_CLAIM': 'jti',
 }
-
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your Project API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     # 'http://192.168.11.2:8000',
@@ -213,3 +221,10 @@ AUTH_USER_MODEL = 'eriadu_auth.CustomUser'
 CSRF_TRUSTED_ORIGINS = ['https://alirezayn.pythonanywhere.com','https://api.payping.ir']
 CSRF_COOKIE_HTTPONLY = False
 
+ASGI_APPLICATION = "eriadu.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}

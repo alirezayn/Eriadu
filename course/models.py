@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.conf import settings
 class Course(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -109,3 +109,12 @@ class CourseExam(models.Model):
     
     def __str__(self):
         return self.title
+
+
+
+
+class CourseInteraction(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='interactions')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    interaction_type = models.BooleanField(default=True)
+    timestamp = models.DateTimeField(auto_now_add=True)

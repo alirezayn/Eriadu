@@ -15,6 +15,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 import pyotp
 import random
 from rest_framework_simplejwt.tokens import RefreshToken
+from .utils import send_verification_code
 
 user = get_user_model()
 
@@ -43,6 +44,7 @@ class CreateUserView(generics.CreateAPIView):
             former_otp.delete()
             otp_code = str(random.randint(100000, 999999))
             otp_object = OTP.objects.create(user_id=user_exists.id,otp_code=otp_code)
+            send_verification_code(phone,str(otp_object.otp_code))
             return Response({
                 'success':True,
                 'message': 'New OTP has been generated and sent to the user.',
@@ -63,6 +65,7 @@ class CreateUserView(generics.CreateAPIView):
 
         user_phone = serializer.validated_data.get('user_phone')
 
+        send_verification_code(user_phone,str(otp_code))
 
 
 

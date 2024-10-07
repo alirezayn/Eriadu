@@ -21,6 +21,9 @@ urlpatterns = [
     path('category_by_id/',view=CourseNameListViewById.as_view(),name='course_by_id'),
     path('section/',view=SectionTitleViewSet.as_view(),name='section'),
     path('question_list/',view=TitleQuestionListView.as_view(),name='question_list'),
+    path('viewed/<int:course_id>/',view=RegisterView.as_view(),name='viewed'),
+    path('viewed/trending/', TrendingCourseS.as_view(), name='trending-courses'),
+
 ]
 
 

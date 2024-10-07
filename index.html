@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Example</title>
+</head>
+<body>
+    <input type="text" id="send">
+
+    <button onclick="sendMessage('salam')">Send</button>
+    
+</body>
+<script>
+    let socket;
+
+    const connectWebSocket = () => {
+        socket = new WebSocket('ws://localhost:8000/ws/somepath/');
+
+        socket.onopen = function(event) {
+            console.log('WebSocket connection opened.');
+            socket.send(JSON.stringify({ 'message': 'Hello WebSocket' }));
+        };
+
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log(data.message);
+        };
+
+        socket.onclose = function(event) {
+            console.log('WebSocket connection closed. Attempting to reconnect...');
+            setTimeout(connectWebSocket, 5000); // reconnect after 5 seconds
+        };
+
+        socket.onerror = function(error) {
+            console.error('WebSocket error: ', error);
+        };
+    };
+
+    const sendMessage = () => {
+        const data = document.getElementById('send').value
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ 'message': data }));
+        } else {
+            console.log('WebSocket is not open. Message not sent.');
+        }
+    };
+
+    // Connect to WebSocket on page load
+    connectWebSocket();
+</script>
+</html>
