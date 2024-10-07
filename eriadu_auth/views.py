@@ -16,7 +16,7 @@ import pyotp
 import random
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import send_verification_code
-import requests
+
 user = get_user_model()
 
 
@@ -44,26 +44,7 @@ class CreateUserView(generics.CreateAPIView):
             former_otp.delete()
             otp_code = str(random.randint(100000, 999999))
             otp_object = OTP.objects.create(user_id=user_exists.id,otp_code=otp_code)
-            # send_verification_code(phone,str(otp_object.otp_code))
-            url = 'https://api.sms.ir/v1/send/verify'
-            headers = {
-                'Content-Type': 'application/json',
-                'Accept': 'text/plain',
-                'x-api-key': 'rX4ZsdADrnaDjrdpr8eG4rBW25lElddcvmMGjbIZvbOj2YJQqeSeODq78twjpT2e',
-            }
-            post_data = {
-                'mobile': user_exists.user_phone,
-                'templateId': '442756',
-                'parameters': [
-                    {
-                        'name': 'code',
-                        'value': otp_code
-                    }
-                ]
-            }
-            requests.post(url, json=post_data, headers=headers)
-
-
+            send_verification_code(phone,str(otp_object.otp_code))
 
             return Response({
                 'success':True,
