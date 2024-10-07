@@ -28,8 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     # '192.168.11.2',
-    # 'alirezayn.pythonanywhere.com',
-    # 'api.payping.ir'
+    'alirezayn.pythonanywhere.com',
+    'api.payping.ir'
 ]
 
 AUTHENTICATION_BACKENDS = [
