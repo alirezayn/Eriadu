@@ -4,6 +4,7 @@ from django.http import HttpRequest, HttpResponse, JsonResponse,HttpResponseRedi
 from django.views.decorators.http import require_POST
 from django.middleware.csrf import get_token
 import uuid
+from rest_framework.generics import ListAPIView
 from eriadu_auth.models import CustomUser,LimitedAccess
 from django.views.decorators.csrf import csrf_exempt
 from course.models import Course
@@ -13,7 +14,16 @@ import requests
 from dateutil.relativedelta import relativedelta
 import json
 from rest_framework.decorators import api_view
+from .serializers import *
 url_payping = 'https://api.payping.ir/v2/pay' 
+
+
+class PlanListView(ListAPIView):
+    queryset = CoursePlan.objects.all()
+    serializer_class = CoursePlaneSerializer
+
+
+
 @api_view(['GET'])
 def get_csrf_token(request):
     """
