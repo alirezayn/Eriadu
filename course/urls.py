@@ -23,6 +23,7 @@ urlpatterns = [
     path('question_list/',view=TitleQuestionListView.as_view(),name='question_list'),
     path('viewed/<int:course_id>/',view=RegisterView.as_view(),name='viewed'),
     path('viewed/trending/', TrendingCourseS.as_view(), name='trending-courses'),
+    path('watched_title/<int:title_id>/',UnlockNextTitleAPIView.as_view(),name="watched_title")
 
 ]
 

@@ -1,11 +1,12 @@
 from django.http import JsonResponse, StreamingHttpResponse
+from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import os
 import subprocess
 import tempfile
 from openai import OpenAI
-
+from django.http import HttpRequest
 client = OpenAI(
   api_key="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",
   organization='org-Qi1wKCtqityprA3uQiAO1Arh',
@@ -105,3 +106,10 @@ def chat_gpt(request):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
+
+
+def render_http(request:HttpRequest):
+    if request.method  == "POST":
+        data = request.POST.get("page")
+        return render(data)

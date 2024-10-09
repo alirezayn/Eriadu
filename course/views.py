@@ -3,6 +3,7 @@ from datetime import  timedelta
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -17,6 +18,7 @@ from .serializers import (
     CourseIntroSerializer,
     CourseSerializer,
     CourseTitleSerializer,
+    TitleInteraction,
     CourseSubtitleSerializer,
     AddCourseTitleSerializer,
     CourseNameSerializer,
@@ -31,7 +33,7 @@ from rest_framework.decorators import api_view
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     @action(detail=True, methods=['post'])
     def title(self, request:Request, pk=None):
         query = request.query_params.get('title')
@@ -175,19 +177,18 @@ class TrendingCourses(APIView):
             "count": str(interaction)
         })
 
+
+
 class TrendingCourseS(APIView):
     def get(self, request):
-        # بازه زمانی هفت روزه اخیر
         last_week = timezone.now() - timedelta(days=7)
 
-        # محاسبه تعداد تعاملات (interactions) مرتبط با هر کورس
         trending_courses = Course.objects.filter(
             interactions__timestamp__gte=last_week
         ).annotate(
             total_interactions=Count('interactions')
-        ).order_by('-total_interactions')[:10]  # نمایش 10 کورس برتر
+        ).order_by('-total_interactions')[:10] 
 
-        # لیست نهایی داده‌های قابل سریالایز
         data = [
             {
                 "id": str(course.id),
@@ -199,3 +200,44 @@ class TrendingCourseS(APIView):
         ]
 
         return Response(data)
+    
+
+
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+
+
+class UnlockNextTitleAPIView(APIView):
+    def post(self, request, title_id, *args, **kwargs):
+        user = request.user
+        
+        try:
+            # یافتن تایتل فعلی
+            current_title = CourseTitle.objects.get(id=title_id)
+
+            # یافتن یا ایجاد تعامل برای تایتل فعلی و کاربر فعلی
+            current_interaction, created = TitleInteraction.objects.get_or_create(user=user, title=current_title)
+
+            # به‌روزرسانی watched به True برای تایتل فعلی
+            if not current_interaction.watched:
+                current_interaction.watched = True
+                current_interaction.save()
+
+            # یافتن تایتل بعدی بر اساس ترتیب chapter
+            next_title = CourseTitle.objects.filter(course=current_title.course, chapter__gt=current_title.chapter).order_by('chapter').first()
+
+            if not next_title:
+                return Response({'detail': 'Next title not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # یافتن یا ایجاد تعامل برای تایتل بعدی و کاربر فعلی
+            next_interaction, created = TitleInteraction.objects.get_or_create(user=user, title=next_title)
+
+            # باز کردن قفل تایتل بعدی فقط برای کاربر فعلی
+            if next_interaction.locked:
+                next_interaction.locked = False
+                next_interaction.save()
+
+            return Response({'detail': 'Current title marked as watched and next title unlocked successfully.'}, status=status.HTTP_200_OK)
+
+        except CourseTitle.DoesNotExist:
+            return Response({'detail': 'Current title not found.'}, status=status.HTTP_404_NOT_FOUND)

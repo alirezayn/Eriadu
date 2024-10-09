@@ -1,0 +1,34 @@
+import requests
+
+
+header = {
+    "Authorization":"Bearer sk-7c5371ca2a70048898931c4c448017ad"
+}
+
+data = {
+    "text":"سلام چطوری",
+    "gender":"male",
+    "server":"azure",
+    "lang":"persian"
+}
+
+
+url = requests.post('https://api.talkbot.ir/v1/media/text-to-speech/REQ')
+
+result = url.json()
+
+status = url.status_code
+
+header_response = url.headers
+
+print(f"result : {result}\n \n status : {status}\n \n header : {header_response}")
+
+
+
+ # خروجی که میده
+
+ result : {'error': {'code': 403, 'message': 'Subscription expired', 'description': 'Unfortunately, your Talkbot AI API package has expired. Please proceed to renew your account.'}}
+ 
+ status : 200
+ 
+ header : {'Connection': 'Keep-Alive', 'Keep-Alive': 'timeout=5, max=100', 'content-type': 'application/json', 'content-length': '150', 'content-encoding': 'gzip', 'vary': 'Accept-Encoding,User-Agent', 'date': 'Tue, 08 Oct 2024 08:37:22 GMT', 'server': 'LiteSpeed', 'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer-when-downgrade', 'x-xss-protection': '1; mode=block', 'access-control-allow-origin': '*', 'access-control-allow-methods': 'POST', 'access-control-allow-headers': 'authorization,content-type', 'alt-svc': 'h3=":443"; ma=2592000, h3-29=":443"; ma=2592000, h3-Q050=":443"; ma=2592000, h3-Q046=":443"; ma=2592000, h3-Q043=":443"; ma=2592000, quic=":443"; ma=2592000; v="43,46"'}

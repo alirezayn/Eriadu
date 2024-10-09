@@ -13,7 +13,7 @@ class Course(models.Model):
 class CourseTitle(models.Model):
     chapter = models.CharField(max_length=255,blank=False,null=False)
     course = models.ForeignKey(Course, related_name='titles', on_delete=models.CASCADE)
-
+    
     def __str__(self):
         return self.chapter
 
@@ -71,6 +71,7 @@ class SubSectionContent(models.Model):
     content = models.TextField()
     code = models.BooleanField(default=False)
     priority = models.IntegerField(default=0)
+    sound = models.FileField(upload_to='static/SubSectionContent/sounds/',null=True,blank=True)
     sub_section_content = models.ForeignKey(SubSection,related_name='sub_section_content',on_delete=models.CASCADE)
     
     class Meta:
@@ -118,3 +119,11 @@ class CourseInteraction(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     interaction_type = models.BooleanField(default=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+
+
+class TitleInteraction(models.Model):
+    title = models.ForeignKey(CourseTitle,on_delete=models.CASCADE,related_name='title_interaction')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    watched = models.BooleanField(default=False)
+    locked = models.BooleanField(default=True)

@@ -82,18 +82,13 @@ class VerifyOTPView(generics.GenericAPIView):
     serializer_class = OTPVerifySerializer
 
     def post(self, request, *args, **kwargs):
-        # serializer = self.get_serializer(data=request.data)
-        # serializer.is_valid(raise_exception=True)
 
         otp_code = request.data.get('otp_code')
         
         otp = get_object_or_404(OTP, otp_code=otp_code)
         
-        # بررسی صحت و اعتبار OTP
         if otp:
-            # فعال کردن کاربر
-            user = otp.user
-  
+            user = otp.user 
             user.is_active = True
             user.save()
             refresh = user.get_token()
@@ -112,23 +107,9 @@ class CreateAdminUserView(generics.CreateAPIView):
         serializer.save(is_staff=True, is_superuser=True)
 
 
-
-
 class ShowUserViewSet(viewsets.ModelViewSet):
     queryset = user.objects.all()
     serializer_class = CustomUserRegisterSerializer
-    # permission_classes = [IsAuthenticated]
-    # def get_queryset(self):
-    #     user = self.request.user
-
-    #     if user.is_pro:
-    #         # Return all courses if user is pro
-    #         return CustomUser.objects.all()
-        
-    #     else:
-    #         # Return only courses assigned to the user
-    #         return CustomUser.courses.filter(id=user.id)
-
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):

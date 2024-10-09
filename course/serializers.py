@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, CourseExam, CourseTitle,CourseSubtitle,QuestionTitleSection, SubSection, SubSectionContent,CourseIntroduction
+from .models import Course, CourseExam, CourseTitle,CourseSubtitle,QuestionTitleSection, SubSection, SubSectionContent,CourseIntroduction, TitleInteraction
 
 class AddCourseTitleSerializer(serializers.ModelSerializer):
     course = serializers.SlugRelatedField(slug_field='name', queryset=Course.objects.all())
@@ -46,6 +46,10 @@ class CourseSubtitleSerializer(serializers.ModelSerializer):
     # def get_course_title(self, obj):
     #     return obj.course_title.chapter  # assuming 'title' is a field in CourseTitle model
 
+
+
+
+
 class CourseTitleSectionSerializer(serializers.ModelSerializer):
     section = CourseSubtitleSerializer(many=True,read_only =True)
     class Meta:
@@ -53,15 +57,42 @@ class CourseTitleSectionSerializer(serializers.ModelSerializer):
         fields = ['id','section']
 
 
+
+
+class TitleInteractionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TitleInteraction
+        fields = ["watched","locked"]
+
+
 class CourseTitleSerializer(serializers.ModelSerializer):
     section = CourseSubtitleSerializer(many=True, read_only=True)
     question = QuestionTitleSectionSerializer(many=True, read_only=True) 
+    watched = serializers.SerializerMethodField()
+    locked = serializers.SerializerMethodField()
+
+    # Class-level variable to track first title
+    is_first_title = True
+
     class Meta:
         model = CourseTitle
-        fields = ['id', 'chapter','question', 'section']
+        fields = ['id', 'chapter', 'question', 'watched', 'locked', 'section',]
 
+    def get_watched(self, obj):
+        user = self.context['request'].user
+        interaction = TitleInteraction.objects.filter(title=obj, user=user).first()
+        return interaction.watched if interaction else False
 
+    def get_locked(self, obj):
+        user = self.context['request'].user
+        interaction = TitleInteraction.objects.filter(title=obj, user=user).first()
 
+        if self.is_first_title:
+            self.is_first_title = False  # Mark as processed for the first title
+            return False  # Return False for the first title
+        else:
+            return interaction.locked if interaction else True  # For other titles, use the default logic
+    
 
 
 class CourseIntroSerializer(serializers.ModelSerializer):
@@ -75,7 +106,7 @@ class CourseIntroductionSerializer(serializers.ModelSerializer):
     course_intro = CourseIntroSerializer(many=True)
     class Meta:
         model = Course
-        fields = ['id', 'name','image','course_intro']
+        fields = ['id', 'name','image','is_pro','course_intro']
 
 
 
@@ -125,6 +156,8 @@ class CourseSubtitleCreateSerializer(serializers.ModelSerializer):
         model = CourseSubtitle
         fields = ['course', 'course_title', 'section', 'content']
 
+
+
     def validate(self, data):
         course = data.get('course')
         course_title = data.get('course_title')
@@ -163,3 +196,5 @@ class CourseTitleQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseTitle
         fields = ['question']
+
+
