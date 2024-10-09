@@ -194,7 +194,7 @@ class TrendingCourseS(APIView):
                 "id": str(course.id),
                 "name":str(course.name),
                 "is_pro": course.is_pro,
-                "image":str(course.image),
+                "image":f"https://alirezayn.pythonanywhere.com/{course.image}",
                 "viewd": str(course.total_interactions)
             }
             for course in trending_courses
