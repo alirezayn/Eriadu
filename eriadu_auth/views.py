@@ -2,6 +2,7 @@
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import generics, permissions,viewsets,status
+from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from course.models import Course
@@ -229,3 +230,15 @@ class UserCourseListCreateView(generics.ListCreateAPIView):
         if not queryset.exists():
             return Response({"message": False}, status=status.HTTP_200_OK)
         return super().list(request, *args, **kwargs)
+    
+
+class RetrieveUserCourseAPI(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        if user.is_authenticated:
+            # فیلتر کردن رکوردها بر اساس کاربر احراز هویت شده
+            queryset = UserCourse.objects.filter(user=user)
+            serializer = UserCourseSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "Unauthorized"}, status=status.HTTP_403_FORBIDDEN)

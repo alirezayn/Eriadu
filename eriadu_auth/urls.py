@@ -13,4 +13,5 @@ urlpatterns = [
     path('register/', CreateUserView.as_view(), name='register'),
     path('verify-otp/',VerifyOTPView.as_view(),name='verifyOtp'),
     path('course/',UserCourseListCreateView.as_view(),name='user_course'),
+    path('user_course',RetrieveUserCourseAPI.as_view(),name='user_course')
 ]
