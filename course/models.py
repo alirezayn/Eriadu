@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+
 class Course(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -77,8 +78,10 @@ class SubSectionContent(models.Model):
     class Meta:
         ordering = ['priority']  
 
-class CourseIntroduction(models.Model):
 
+
+
+class CourseIntroduction(models.Model):
     headline = models.CharField(max_length=500)  # تیتر اصلی
     description = models.TextField()  # توضیحات کامل محصول یا دوره
     image = models.ImageField(upload_to='static/course_intro/', null=True, blank=True)  # تصویر معرفی
@@ -110,7 +113,6 @@ class CourseExam(models.Model):
     
     def __str__(self):
         return self.title
-
 
 
 

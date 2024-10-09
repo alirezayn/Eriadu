@@ -5,6 +5,7 @@ from django.contrib.auth.hashers import make_password
 from course.models import Course
 from course.serializers import CourseSerializer
 from payment.models import Factor
+from .models import UserCourse
 CustomUser = get_user_model()
 
 class CustomUserRegisterSerializer(serializers.ModelSerializer):
@@ -52,9 +53,27 @@ class CustomUserCourseSerializer(serializers.ModelSerializer):
             if user.is_pro:
                 return Course.objects.all()
             return user.courses.all()
+        
+        def update(self, instance, validated_data):
+            courses = validated_data.pop('courses', [])
+            instance = super().update(instance, validated_data)
+            if courses:
+                instance.courses.set(courses)
+            return instance
 
 
-class UserFactorDetails (serializers.ModelSerializer):
+class UserFactorDetails(serializers.ModelSerializer):
     class Meta:
         model = Factor
         fields = '__all__'
+
+class CustomCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['id','name','is_pro','description', 'image']
+
+class UserCourseSerializer(serializers.ModelSerializer):
+    course = CustomCourseSerializer(read_only=True) 
+    class Meta:
+        model = UserCourse
+        fields = ['id','course']

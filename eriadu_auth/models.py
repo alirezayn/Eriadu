@@ -118,3 +118,10 @@ class LimitedAccess(models.Model):
         start_jalali = self.get_start_date_jalali()
         end_jalali = self.get_end_date_jalali()
         return f"از تاریخ {start_jalali} تا {end_jalali}"
+
+
+
+
+class UserCourse(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    course = models.ForeignKey(Course,on_delete=models.CASCADE)

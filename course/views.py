@@ -193,6 +193,7 @@ class TrendingCourseS(APIView):
             {
                 "id": str(course.id),
                 "name":str(course.name),
+                "is_pro": course.is_pro,
                 "image":str(course.image),
                 "viewd": str(course.total_interactions)
             }

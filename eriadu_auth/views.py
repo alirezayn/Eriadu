@@ -157,7 +157,7 @@ class AccessibleCourseViewSet(viewsets.ReadOnlyModelViewSet):
             return user.courses.all()
 
 
-class UserCourseListApiView(generics.ListAPIView):
+class UserCourseListApiView(generics.ListCreateAPIView):
     serializer_class = CustomUserCourseSerializer
 
     def get_queryset(self):
@@ -169,7 +169,48 @@ class UserCourseListApiView(generics.ListAPIView):
             return user.objects.all()
         
 
+    def patch(self, request, *args, **kwargs):
+        user_phone = self.request.data.get('user_phone')
+        courses = request.data.get('courses', [])
+
+        try:
+            user = CustomUser.objects.get(user_phone=user_phone)
+        except CustomUser.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save(courses=courses)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
+
+
 
 class AllUserFactorDetails(viewsets.ModelViewSet):
     queryset = Factor.objects.all()
     serializer_class = UserFactorDetails
+
+
+
+
+class UserCourseListCreateView(generics.ListCreateAPIView):
+    queryset = UserCourse.objects.all()
+    serializer_class = UserCourseSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            # برگرداندن دوره‌های کاربری که وارد سیستم شده
+            return UserCourse.objects.filter(user=user)
+        else:
+            # در صورتی که کاربر یافت نشود، پیام خطا ارسال می‌شود
+            return UserCourse.objects.none()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if not queryset.exists():
+            return Response({"detail": "Courses not found for this user."}, status=status.HTTP_404_NOT_FOUND)
+        return super().list(request, *args, **kwargs)
