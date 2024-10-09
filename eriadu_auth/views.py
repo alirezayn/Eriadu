@@ -239,6 +239,6 @@ class RetrieveUserCourseAPI(APIView):
             # فیلتر کردن رکوردها بر اساس کاربر احراز هویت شده
             queryset = UserCourse.objects.filter(user=user)
             serializer = UserCourseSerializer(queryset, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"data":serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({"message": "Unauthorized"}, status=status.HTTP_403_FORBIDDEN)
