@@ -44,7 +44,7 @@ class CreateUserView(generics.CreateAPIView):
             former_otp.delete()
             otp_code = str(random.randint(100000, 999999))
             otp_object = OTP.objects.create(user_id=user_exists.id,otp_code=otp_code)
-            send_verification_code(phone,str(otp_object.otp_code))
+            # send_verification_code(phone,str(otp_object.otp_code))
 
             return Response({
                 'success':True,
@@ -66,7 +66,7 @@ class CreateUserView(generics.CreateAPIView):
 
         user_phone = serializer.validated_data.get('user_phone')
 
-        send_verification_code(user_phone,str(otp_code))
+        # send_verification_code(user_phone,str(otp_code))
 
 
 
@@ -216,7 +216,7 @@ class UserCourseListCreateView(generics.ListCreateAPIView):
             # پس از ذخیره‌سازی موفق، پیام موفقیت برگردانده می‌شود
             self.response_message = {"message": True}
         except:
-            # اگر خطایی رخ دهد، پیام خطا برگردانده می‌شود
+        #     # اگر خطایی رخ دهد، پیام خطا برگردانده می‌شود
             self.response_message = {"message": False}
 
     def create(self, request, *args, **kwargs):

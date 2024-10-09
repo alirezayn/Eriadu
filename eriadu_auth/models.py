@@ -124,4 +124,7 @@ class LimitedAccess(models.Model):
 
 class UserCourse(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
-    course = models.OneToOneField(Course,on_delete=models.CASCADE,unique=True)
+    course = models.ForeignKey(Course,on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'course')

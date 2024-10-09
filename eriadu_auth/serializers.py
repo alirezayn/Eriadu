@@ -74,9 +74,9 @@ class CustomCourseSerializer(serializers.ModelSerializer):
 
 class UserCourseSerializer(serializers.ModelSerializer):
     course = CustomCourseSerializer(read_only=True)  # استفاده از سریالایزر Course برای نمایش جزئیات دوره
-  # فقط شناسه دوره از کلاینت دریافت شود
+    course_id = serializers.PrimaryKeyRelatedField(source='course', queryset=Course.objects.all(), write_only=True)  # دریافت شناسه دوره از کلاینت
 
     class Meta:
         model = UserCourse
-        fields = ('id', 'user', 'course')  # user را فقط برای نمایش استفاده می‌کنیم
-        read_only_fields = ('user',)  # کاربر به‌صورت خودکار تنظیم می‌شود
+        fields = ('id', 'user', 'course', 'course_id')  # فیلدهای مورد نیاز
+        read_only_fields = ('user',)
