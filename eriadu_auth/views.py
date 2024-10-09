@@ -209,11 +209,23 @@ class UserCourseListCreateView(generics.ListCreateAPIView):
             return UserCourse.objects.none()
 
     def perform_create(self, serializer):
-        # هنگام ساخت رکورد جدید، کاربر جاری را به عنوان user_course تنظیم می‌کنیم
-        serializer.save(user=self.request.user)
+        try:
+            user_phone = self.request.user.user_phone
+            custom_user = CustomUser.objects.get(user_phone=user_phone)
+            serializer.save(user=custom_user)
+            # پس از ذخیره‌سازی موفق، پیام موفقیت برگردانده می‌شود
+            self.response_message = {"message": True}
+        except:
+            # اگر خطایی رخ دهد، پیام خطا برگردانده می‌شود
+            self.response_message = {"message": False}
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        # در اینجا تنها پیام را به جای داده‌های دیگر برمی‌گردانیم
+        return Response(self.response_message, status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         if not queryset.exists():
-            return Response({"detail": "Courses not found for this user."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": False}, status=status.HTTP_200_OK)
         return super().list(request, *args, **kwargs)
