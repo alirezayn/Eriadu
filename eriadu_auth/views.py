@@ -206,8 +206,11 @@ class UserCourseListCreateView(generics.ListCreateAPIView):
             # برگرداندن دوره‌های کاربری که وارد سیستم شده
             return UserCourse.objects.filter(user=user)
         else:
-            # در صورتی که کاربر یافت نشود، پیام خطا ارسال می‌شود
             return UserCourse.objects.none()
+
+    def perform_create(self, serializer):
+        # هنگام ساخت رکورد جدید، کاربر جاری را به عنوان user_course تنظیم می‌کنیم
+        serializer.save(user=self.request.user)
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
