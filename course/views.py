@@ -1,6 +1,8 @@
 from django.utils import timezone
 from datetime import  timedelta
 from django.http import JsonResponse
+from django.core.files.base import ContentFile
+
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from rest_framework.decorators import api_view, permission_classes
@@ -11,22 +13,10 @@ from rest_framework.generics import ListAPIView,RetrieveAPIView,DestroyAPIView
 from rest_framework.exceptions import NotFound
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser,IsAuthenticated
+import requests
 from rest_framework.views import APIView
-from .models import Course, CourseExam, CourseInteraction, CourseIntroduction, CourseTitle, CourseSubtitle,QuestionTitleSection, SubSection, SubSectionContent
-from .serializers import (
-    CourseExamSerializer,
-    CourseIntroSerializer,
-    CourseSerializer,
-    CourseTitleSerializer,
-    TitleInteraction,
-    CourseSubtitleSerializer,
-    AddCourseTitleSerializer,
-    CourseNameSerializer,
-    CourseNameSerializerById,
-    CourseTitleSectionSerializer,
-    ExamSerializer,QuestioSectionSerialzer,CourseTitleQuestionSerializer,
-    SubSectionContentSerializer,SubSectionSerializer,CourseIntroductionSerializer
-)
+from .models import *
+from .serializers import *
 import subprocess
 from rest_framework.decorators import api_view
 
@@ -102,6 +92,41 @@ class SubSectionContentViewSet(viewsets.ModelViewSet):
     queryset = SubSectionContent.objects.all()
     serializer_class = SubSectionContentSerializer
 
+    def perform_create(self, serializer):
+        # ابتدا مدل را ذخیره می‌کنیم
+        instance = serializer.save()
+
+        # درخواست به API برای تولید صدا با استفاده از فیلد content
+        header = {
+            "Authorization": "Bearer sk-7c5371ca2a70048898931c4c448017ad"
+        }
+        data = {
+            'text': instance.content,  # ارسال محتوای فیلد content به عنوان متن
+            'server': 'farsi',
+            'sound': '3'
+        }
+
+        response = requests.post('https://api.talkbot.ir/v1/media/text-to-speech/REQ', data=data, headers=header)
+
+        if response.status_code == 200:
+            response_json = response.json()
+            download_url = response_json["response"]["download"]
+
+            # ارسال درخواست GET برای دانلود فایل صوتی
+            audio_response = requests.get(download_url)
+
+            if audio_response.status_code == 200:
+                # ذخیره فایل صوتی به عنوان ContentFile
+                audio_file = ContentFile(audio_response.content)
+
+                # ذخیره و آپلود فایل صوتی در فیلد sound
+                instance.sound.save(f'subsectioncontent_{instance.id}.mp3', audio_file)  # ذخیره فایل در فیلد sound
+            else:
+                print(f"Failed to download audio file: {audio_response.status_code}")
+        else:
+            print(f"API Error: {response.status_code} - {response.text}")
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CourseIntroductionViewSet(viewsets.ModelViewSet):
