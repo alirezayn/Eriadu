@@ -5,7 +5,7 @@ header = {
 }
 
 data = {
- 'text': 'سلام امیدوارم حالت خوب باشه.',
+ 'text': 'جاوا اسکریپت یک زبان چند منظوره هست',
     'server': 'farsi',
     'sound': '3'
 }
@@ -21,9 +21,9 @@ if response.status_code == 200:
 
     if audio_response.status_code == 200:
         # ذخیره فایل صوتی با نام مورد نظر
-        with open("output.mp3", "wb") as audio_file:
+        with open("js_crossplatform.mp3", "wb") as audio_file:
             audio_file.write(audio_response.content)
-        print("File downloaded and saved as output.mp3")
+        print("File downloaded and saved as js_crossplatform.mp3")
     else:
         print(f"Failed to download audio file: {audio_response.status_code}")
 else:

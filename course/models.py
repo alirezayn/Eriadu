@@ -78,6 +78,8 @@ class SubSectionContent(models.Model):
     class Meta:
         ordering = ['priority']  
 
+    def __str__(self):
+        return self.content
 
 
 

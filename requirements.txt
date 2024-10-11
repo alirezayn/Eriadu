@@ -9,3 +9,4 @@ requests
 drf-spectacular
 channels
 daphne
+deep-translator
