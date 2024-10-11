@@ -19,6 +19,7 @@ def search_all_models(request):
             for model in all_models:
                 # بررسی فیلدهای متنی برای جستجو
                 model_name = model.__name__
+
                 fields = [field.name for field in model._meta.fields if field.get_internal_type() in ['CharField', 'TextField']]
 
                 if fields:
@@ -48,6 +49,13 @@ def search_specific_models(request):
     # لیست مدل‌های خاص برای جستجو
     models_to_search = [Course,CourseTitle,CourseIntroduction,CourseSubtitle,CourseExam]
 
+    model_aliases = {
+        'Course': 'درس',
+        'CourseTitle': 'تیتر',
+        'CourseIntroduction': 'معرفی',
+        'CourseSubtitle': 'سکشن',
+        'CourseExam': 'آزمون'
+    }
     if query:
         try:
             # ترجمه کوئری از انگلیسی به فارسی
@@ -55,6 +63,7 @@ def search_specific_models(request):
 
             for model in models_to_search:
                 model_name = model.__name__
+                alias = model_aliases.get(model_name, model_name)
                 fields = [field.name for field in model._meta.fields if field.get_internal_type() in ['CharField', 'TextField']]
                 
                 if fields:
@@ -68,7 +77,7 @@ def search_specific_models(request):
 
                     # افزودن نتایج به دیکشنری به همراه ID و توصیف
                     if model_results.exists():
-                        results[model_name] = [{'id': result.id, 'description': str(result)} for result in model_results]
+                        results[alias] = [{'id': result.id, 'description': str(result)} for result in model_results]
 
         except Exception as e:
             return Response({"error": str(e)}, status=500)
