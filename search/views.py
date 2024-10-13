@@ -33,7 +33,7 @@ def search_all_models(request):
 
                     # افزودن نتایج به دیکشنری به همراه ID و توصیف
                     if model_results.exists():
-                        results[model_name] = [{'id': result.id, 'description': str(result)} for result in model_results]
+                        results[model_name] = [{'id': result.id, 'description': str(result),'image':result.image} for result in model_results]
 
         except Exception as e:
             return Response({"error": str(e)}, status=500)
@@ -45,9 +45,9 @@ def search_all_models(request):
 def search_specific_models(request):
     query = request.GET.get('q', '')
     results = {}
-    
+
     # لیست مدل‌های خاص برای جستجو
-    models_to_search = [Course,CourseTitle,CourseIntroduction,CourseSubtitle,CourseExam]
+    models_to_search = [Course, CourseTitle, CourseIntroduction, CourseSubtitle, CourseExam]
 
     model_aliases = {
         'Course': 'درس',
@@ -56,6 +56,10 @@ def search_specific_models(request):
         'CourseSubtitle': 'سکشن',
         'CourseExam': 'آزمون'
     }
+
+    # آدرس هاست به صورت دستی
+    host_url = "http://alirezayn.pythonanywhere.com"
+
     if query:
         try:
             # ترجمه کوئری از انگلیسی به فارسی
@@ -65,7 +69,7 @@ def search_specific_models(request):
                 model_name = model.__name__
                 alias = model_aliases.get(model_name, model_name)
                 fields = [field.name for field in model._meta.fields if field.get_internal_type() in ['CharField', 'TextField']]
-                
+
                 if fields:
                     q_objects = Q()
                     for field in fields:
@@ -77,7 +81,12 @@ def search_specific_models(request):
 
                     # افزودن نتایج به دیکشنری به همراه ID و توصیف
                     if model_results.exists():
-                        results[alias] = [{'id': result.id, 'description': str(result)} for result in model_results]
+                        results[alias] = [{
+                            'id': result.id,
+                            'description': str(result),
+                            'is_pro':result.is_pro if hasattr(result,'image') and result.is_pro else False,
+                            'image': host_url + result.image.url if hasattr(result, 'image') and result.image else None
+                        } for result in model_results]
 
         except Exception as e:
             return Response({"error": str(e)}, status=500)

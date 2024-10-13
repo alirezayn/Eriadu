@@ -32,6 +32,16 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['last_name'] = user.last_name
         return token
 
+
+
+class LoginPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+
+
+
+
+
 class CreateUserView(generics.CreateAPIView):
     model = user
     serializer_class = CustomUserRegisterSerializer
@@ -39,7 +49,7 @@ class CreateUserView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         phone = request.data.get('user_phone')
         user_exists = user.objects.filter(user_phone=phone).first()
-    
+
         if user_exists:
             former_otp = OTP.objects.filter(user_id=user_exists.id)
             former_otp.delete()
@@ -50,10 +60,10 @@ class CreateUserView(generics.CreateAPIView):
             return Response({
                 'success':True,
                 'message': 'New OTP has been generated and sent to the user.',
-                'otp_code': otp_object.otp_code, 
+                'otp_code': otp_object.otp_code,
                 'otp_required': True,
             }, status=status.HTTP_200_OK)
-        
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -61,7 +71,7 @@ class CreateUserView(generics.CreateAPIView):
         user_instance = serializer.save(is_staff=False, is_superuser=False, is_active=False)
 
 
-        otp_code = str(random.randint(100000, 999999)) 
+        otp_code = str(random.randint(100000, 999999))
         OTP.objects.create(user=user_instance, otp_code=otp_code)
 
 
@@ -85,11 +95,11 @@ class VerifyOTPView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
 
         otp_code = request.data.get('otp_code')
-        
+
         otp = get_object_or_404(OTP, otp_code=otp_code)
-        
+
         if otp:
-            user = otp.user 
+            user = otp.user
             user.is_active = True
             user.save()
             refresh = user.get_token()
@@ -168,7 +178,7 @@ class UserCourseListApiView(generics.ListCreateAPIView):
             return user_object
         else:
             return user.objects.all()
-        
+
 
     def patch(self, request, *args, **kwargs):
         user_phone = self.request.data.get('user_phone')
@@ -184,7 +194,7 @@ class UserCourseListApiView(generics.ListCreateAPIView):
             serializer.save(courses=courses)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
 
 
 
@@ -230,7 +240,7 @@ class UserCourseListCreateView(generics.ListCreateAPIView):
         if not queryset.exists():
             return Response({"message": False}, status=status.HTTP_200_OK)
         return super().list(request, *args, **kwargs)
-    
+
 
 class RetrieveUserCourseAPI(APIView):
     def get(self, request, *args, **kwargs):
