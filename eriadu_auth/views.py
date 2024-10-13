@@ -38,10 +38,13 @@ class LoginPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 
+<<<<<<< HEAD
 
 
 
 
+=======
+>>>>>>> 96c457ef78fec5f13d4dde6cee8534de9330bd51
 class CreateUserView(generics.CreateAPIView):
     model = user
     serializer_class = CustomUserRegisterSerializer
