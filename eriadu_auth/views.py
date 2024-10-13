@@ -32,6 +32,12 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['last_name'] = user.last_name
         return token
 
+
+
+class LoginPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+
 class CreateUserView(generics.CreateAPIView):
     model = user
     serializer_class = CustomUserRegisterSerializer
