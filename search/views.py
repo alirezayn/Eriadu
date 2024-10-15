@@ -2,8 +2,12 @@ from django.apps import apps
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.generics import *
 from deep_translator import GoogleTranslator
+from eriadu_auth.models import CustomUser
 from course.models import Course,CourseTitle,CourseIntroduction,CourseSubtitle,CourseExam
+from report.serializers import UserSearchSerializer
+from rest_framework.permissions import IsAdminUser
 @api_view(['GET'])
 def search_all_models(request):
     query = request.GET.get('q', '')
@@ -92,3 +96,17 @@ def search_specific_models(request):
             return Response({"error": str(e)}, status=500)
 
     return Response(results)
+
+
+class UserSearchView(ListAPIView):
+
+    serializer_class = UserSearchSerializer
+    permission_classes = [IsAdminUser]
+    
+    def get_queryset(self):
+        queryset = CustomUser.objects.all()
+        phone_number = self.request.query_params.get('phone', None)
+        if phone_number:
+            # جستجو با استفاده از بخش ورودی شماره تلفن
+            queryset = queryset.filter(user_phone__icontains=phone_number)
+        return queryset

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firebase Test</title>
+    <script src="firebase-app.js"></script>
+    <script src="firebase-messaging.js"></script>
+  </head>
+  <body></body>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js";
+    import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtnmFMYWIq1XbywVNq1UY1dVU1ZlpuXjQ",
+      authDomain: "eriadu-project.firebaseapp.com",
+      projectId: "eriadu-project",
+      storageBucket: "eriadu-project.appspot.com",
+      messagingSenderId: "361147699641",
+      appId: "1:361147699641:web:52ee6a7926cb82425a6668",
+      measurementId: "G-NZLLQ9WWBN",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    // Initialize Firebase Cloud Messaging and get a reference to the service
+    const messaging = getMessaging(app);
+
+    // Request permission and get token
+    getToken(messaging, { vapidKey: "YOUR_VAPID_KEY" })
+      .then((currentToken) => {
+        if (currentToken) {
+          console.log("FCM Token:", currentToken);
+          // ارسال توکن به سرور
+          sendTokenToServer(currentToken);
+        } else {
+          console.log("No registration token available.");
+        }
+      })
+      .catch((err) => {
+        console.log("An error occurred while retrieving token. ", err);
+      });
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/firebase-messaging-sw.js')
+        .then(function (registration) {
+          console.log('Service Worker registered successfully:', registration);
+        })
+        .catch(function (err) {
+          console.log('Service Worker registration failed:', err);
+        });
+    }
+  </script>
+</html>

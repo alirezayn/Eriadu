@@ -51,7 +51,7 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
-    phone_validator = RegexValidator(regex=r'^\d{11}$', message="Phone number must be 11 digits.")
+    phone_validator = RegexValidator(regex=r'^09\d{9}$', message="Phone number must be 11 digits.")
     username = models.CharField(unique=True,null=True,max_length=50)
     email = models.EmailField(unique=True,null=True)
     first_name = models.CharField(max_length=30, blank=True)
@@ -64,7 +64,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     image_profile = models.ImageField(upload_to='static/users/profile/',blank=True)
     unlimited = models.BooleanField(default=False)
     limited = models.ForeignKey('LimitedAccess',on_delete=models.CASCADE,null=True,blank=True)
-
+    created = models.DateTimeField(auto_now=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
     groups = models.ManyToManyField(
