@@ -217,7 +217,8 @@ CORS_ALLOWED_ORIGINS = [
     # 'http://192.168.11.2:8000',
     'https://tosegar.vercel.app',
     'https://api.payping.ir',
-    'https://api.sms.ir'
+    'https://api.sms.ir',
+    'https://rizamooz-front.vercel.app'
 ]
 
 # CORS_ALLOW_ALL_ORIGINS = True
