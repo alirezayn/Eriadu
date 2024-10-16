@@ -64,7 +64,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     image_profile = models.ImageField(upload_to='static/users/profile/',blank=True)
     unlimited = models.BooleanField(default=False)
     limited = models.ForeignKey('LimitedAccess',on_delete=models.CASCADE,null=True,blank=True)
-    created = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
 

@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.request import Request
 from rest_framework import status
 from .serializers import NotificationSerializer
 from firebase_admin import messaging
@@ -42,7 +43,27 @@ class SendNotificationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SaveTokenView(CreateAPIView):
-    queryset = UserToken.objects.all()
-    serializer_class = TokenSerializer
+class SaveTokenView(APIView):
+    def post(self, request: Request):
+        user = request.user
+        token = request.query_params.get('token')
+
+        # پیدا کردن یا ایجاد کردن توکن برای کاربر
+        user_token, created = UserToken.objects.get_or_create(
+            user=user,
+            defaults={'token': token}  # اگر وجود نداشت، این توکن ثبت شود
+        )
+
+        if not created:
+            # اگر توکن از قبل وجود داشت، آن را آپدیت کن
+            user_token.token = token
+            user_token.save()
+
+        return Response({
+            "success": True,
+            "created": created  # برای نشان دادن آیا رکورد جدید ایجاد شد یا نه
+        }, status=status.HTTP_201_CREATED)
     
+
+
+# http://192.168.88.67:8000/notification/save-token/
