@@ -8,6 +8,16 @@ from payment.models import Factor
 from .models import UserCourse
 CustomUser = get_user_model()
 
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = '__all__'
+        depth = 2
+
+
+
 class CustomUserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -80,3 +90,5 @@ class UserCourseSerializer(serializers.ModelSerializer):
         model = UserCourse
         fields = ('id', 'user', 'course', 'course_id')  # فیلدهای مورد نیاز
         read_only_fields = ('user',)
+
+

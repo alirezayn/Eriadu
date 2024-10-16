@@ -2,7 +2,6 @@ from django.utils import timezone
 from datetime import  timedelta
 from django.http import JsonResponse
 from django.core.files.base import ContentFile
-
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from rest_framework.decorators import api_view, permission_classes
@@ -14,6 +13,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser,IsAuthenticated
 import requests
+from eriadu_auth.models import UserActivity
 from rest_framework.views import APIView
 from .models import *
 from .serializers import *
@@ -77,7 +77,23 @@ class CourseNameListViewById(RetrieveAPIView):
     def get_object(self):
         request : Request = self.request
         course_id = request.query_params.get('id')
+        user = self.request.user
+        course = Course.objects.get(id=course_id)
+
+        activity = UserActivity.objects.filter(user=user,course=course).first()
+        print(activity)
+        print(activity)
+        if activity:
+            activity.total += 1
+            activity.save()
+        else:
+            UserActivity.objects.create(
+                user = user,
+                course = course,
+                total =  1,
+            )
         return get_object_or_404(Course, id=course_id)
+    
 
 class QuestionSectionViewSet(viewsets.ModelViewSet):
     queryset = QuestionTitleSection.objects.all()

@@ -104,7 +104,6 @@ class VerifyOTPView(generics.GenericAPIView):
             return Response({'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class CreateAdminUserView(generics.CreateAPIView):
     model = user
     serializer_class = CustomUserRegisterSerializer
@@ -247,3 +246,11 @@ class RetrieveUserCourseAPI(APIView):
             return Response({"data":serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({"message": "Unauthorized"}, status=status.HTTP_403_FORBIDDEN)
+
+
+
+
+class FullUserList(viewsets.ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUser,IsStaffUser]

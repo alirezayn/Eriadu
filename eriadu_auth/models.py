@@ -144,3 +144,12 @@ class UserCourse(models.Model):
 
     class Meta:
         unique_together = ('user', 'course')
+
+
+
+class UserActivity(models.Model):
+    total = models.IntegerField(default=0)
+    course = models.ForeignKey(Course,on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    

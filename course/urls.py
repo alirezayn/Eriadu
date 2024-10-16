@@ -12,6 +12,7 @@ router.register(r'ExamList',CourseExamViewSet,basename='ExamList')
 router.register(r'sub_section',SubSectionViewSet)
 router.register(r'sub_section_content',SubSectionContentViewSet)
 router.register(r'course-introductions', CourseIntroductionViewSet)
+
 router.register('intro',CourseIntroViewSet,basename='intro')
 
 
@@ -24,6 +25,7 @@ urlpatterns = [
     path('viewed/<int:course_id>/',view=RegisterView.as_view(),name='viewed'),
     path('viewed/trending/', TrendingCourseS.as_view(), name='trending-courses'),
     path('watched_title/<int:title_id>/',UnlockNextTitleAPIView.as_view(),name="watched_title")
+    
 
 ]
 
