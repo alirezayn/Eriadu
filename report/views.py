@@ -34,63 +34,62 @@ class FactorDetailView(RetrieveAPIView):
 
 
 
+from jdatetime import date as jdate
+from datetime import timedelta
+
 class ReportRateView(APIView):
     permission_classes = [IsAdminUser]
-    def get(self,request:Request):
-
+    
+    def get(self, request: Request):
         now = timezone.now()
-        start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        end_of_month = (start_of_month + timedelta(days=32)).replace(day=1) - timedelta(seconds=1)
+        
+        # گرفتن تاریخ شمسی جاری
+        jalali_now = jdate.fromgregorian(date=now.date())
+        start_of_jalali_month = jdate(jalali_now.year, jalali_now.month, 1)
+        
+        # تبدیل شروع و پایان ماه شمسی به میلادی
+        start_of_month = start_of_jalali_month.togregorian()
+        end_of_month = (start_of_jalali_month.replace(day=1) + timedelta(days=32)).replace(day=1).togregorian() - timedelta(seconds=1)
 
-        # فیلتر کردن فاکتورهایی که در ماه فعلی هستند و پرداخت شده‌اند
+        # فیلتر کردن فاکتورهای ماه شمسی
         factors = Factor.objects.filter(
             created__gte=start_of_month,
             created__lte=end_of_month,
-            payed=True  # فرض بر اینکه فیلد 'payed' وضعیت پرداخت را مشخص می‌کند
+            payed=True
         )
-
-        # سریالایز کردن داده‌های فاکتور (در صورت نیاز به نمایش)
-        factor_data = [factor.id for factor in factors]  # می‌توانید از سریالایزر هم استفاده کنید
 
         users = CustomUser.objects.filter(
             created__gte=start_of_month,
             created__lte=end_of_month,
         )
-        # users_data = [user.id for user in users]
-        jalali_date = date.fromgregorian(date=start_of_month)
-        month_name = date.j_months_fa[jalali_date.month]
 
-
-
+        # فیلتر روزانه
         start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
         end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=999999)
 
-        # فیلتر کردن فاکتورهایی که در روز جاری هستند و پرداخت شده‌اند
         factors_daily = Factor.objects.filter(
             created__gte=start_of_day,
             created__lte=end_of_day,
             payed=True
         )
 
-        # فیلتر کردن کاربرانی که در روز جاری اضافه شده‌اند
         users_daily = CustomUser.objects.filter(
             created__gte=start_of_day,
             created__lte=end_of_day,
         )
 
-        # تبدیل تاریخ به شمسی
-
+        # نام ماه جلالی
+        month_name = jdate.j_months_fa[jalali_now.month - 1]
 
         return Response({
             "total_factors": factors.count(),
-            # "factors": factor_data,
-            "users":users.count(),
-            "month":str(jalali_date),
-            "month_name":month_name,
-            "factor_daily":factors_daily.count(),
-            "user_daily":users_daily.count(),
+            "users": users.count(),
+            "month": str(start_of_jalali_month),
+            "month_name": month_name,
+            "factor_daily": factors_daily.count(),
+            "user_daily": users_daily.count(),
         })
-    
+
 
 class UserReportView(ListAPIView):
     permission_classes = [IsAdminUser]

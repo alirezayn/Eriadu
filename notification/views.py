@@ -7,6 +7,7 @@ from firebase_admin import messaging
 from rest_framework.generics import CreateAPIView
 from .models import *
 from .serializers import *
+from eriadu_auth.models import CustomUser
 # تابع برای ارسال نوتیفیکیشن با استفاده از Firebase
 def send_notification_to_user(token, title, body):
     message = messaging.Message(
@@ -45,18 +46,19 @@ class SendNotificationView(APIView):
 
 class SaveTokenView(APIView):
     def post(self, request: Request):
-        user = request.user
-        token = request.query_params.get('token')
-
+        user = CustomUser.objects.get(id=request.user.id)
+        token = request.data.get('token')
+        # print(user.user_phone)
+        # print(token)
         # پیدا کردن یا ایجاد کردن توکن برای کاربر
-        user_token, created = UserToken.objects.get_or_create(
+        user_token,created = UserToken.objects.get_or_create(
             user=user,
-            defaults={'token': token}  # اگر وجود نداشت، این توکن ثبت شود
+            defaults={'firbase_token': token}  # اگر وجود نداشت، این توکن ثبت شود
         )
 
         if not created:
             # اگر توکن از قبل وجود داشت، آن را آپدیت کن
-            user_token.token = token
+            user_token.firbase_token = token
             user_token.save()
 
         return Response({
@@ -66,4 +68,4 @@ class SaveTokenView(APIView):
     
 
 
-# http://192.168.88.67:8000/notification/save-token/
+# http://192.168.88.61:8000/notification/save-token/
