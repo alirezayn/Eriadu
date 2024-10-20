@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny,IsAuthenticated
 from course.models import Course
 from course.serializers import CourseSerializer
 from .serializers import *
-from .models import CustomUser,OTP
+from .models import CustomUser as ModelUser,OTP
 from .permission import *
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -212,17 +212,18 @@ class UserCourseListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         try:
             user_phone = self.request.user.user_phone
-            custom_user = CustomUser.objects.get(user_phone=user_phone)
+            custom_user = ModelUser.objects.get(user_phone=user_phone)
+            print(custom_user.user_phone)
             serializer.save(user=custom_user)
-            # پس از ذخیره‌سازی موفق، پیام موفقیت برگردانده می‌شود
             self.response_message = {"message": True}
+            
         except:
-        #     # اگر خطایی رخ دهد، پیام خطا برگردانده می‌شود
+       
             self.response_message = {"message": False}
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
-        # در اینجا تنها پیام را به جای داده‌های دیگر برمی‌گردانیم
+      
         return Response(self.response_message, status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
@@ -244,9 +245,9 @@ class RetrieveUserCourseAPI(APIView):
             return Response({"message": "Unauthorized"}, status=status.HTTP_403_FORBIDDEN)
 
 
-
-
 class FullUserList(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdminUser,IsStaffUser]
+
+

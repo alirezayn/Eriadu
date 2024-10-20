@@ -6,6 +6,7 @@ from course.models import Course
 from course.serializers import CourseSerializer
 from payment.models import Factor
 from .models import UserCourse
+
 CustomUser = get_user_model()
 
 

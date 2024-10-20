@@ -10,7 +10,8 @@ from datetime import timedelta
 from rest_framework.permissions import IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
-from jdatetime import date 
+from jdatetime import date as jdate
+from datetime import timedelta
 
 
 
@@ -33,9 +34,6 @@ class FactorDetailView(RetrieveAPIView):
     lookup_field = 'id'
 
 
-
-from jdatetime import date as jdate
-from datetime import timedelta
 
 class ReportRateView(APIView):
     permission_classes = [IsAdminUser]
@@ -96,3 +94,20 @@ class UserReportView(ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     
+
+class UserReportByIdReport(ListAPIView):
+   serializer_class = UserActivitySerializer
+   def get_queryset(self):
+       user = self.request.user
+       return UserActivity.objects.filter(user=user)
+
+
+class UserReportByIdReportForAdmin(ListAPIView):
+    serializer_class = UserActivitySerializer
+    permission_classes = [IsAdminUser]
+    def get_queryset(self):
+        
+        user_id = self.request.query_params.get('id')
+        print(user_id)
+        user = CustomUser.objects.get(id=user_id)
+        return UserActivity.objects.filter(user=user)

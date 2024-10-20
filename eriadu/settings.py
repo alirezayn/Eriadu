@@ -37,13 +37,14 @@ firebase_admin.initialize_app(cred)
 SECRET_KEY = 'django-insecure-0)%^ccy9)k&eu*up17h&sd*7&1!9v6ci*bx-3)slm^2g_=#!=z'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    'alirezayn.pythonanywhere.com',
+    # 'alirezayn.pythonanywhere.com',
     'api.payping.ir',
     'api.sms.ir',
-    'api.talkbot.ir'
+    'api.talkbot.ir',
+    'rizamooz.ir'
     # "192.168.88.61"
 ]
 
@@ -108,27 +109,27 @@ WSGI_APPLICATION = 'eriadu.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # MySQL backend
-        'NAME': 'alirezayn$eriadu',          # Name of your MySQL database
-        'USER': 'alirezayn',               # MySQL username
-        'PASSWORD': 'Adidas:/0631',           # MySQL password
-        'HOST': 'alirezayn.mysql.pythonanywhere-services.com',                   # Database host (use 'localhost' if it's local)
-        'PORT': '3306',                        # MySQL port (default is 3306)
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'"
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',  # MySQL backend
+#         'NAME': 'alirezayn$eriadu',          # Name of your MySQL database
+#         'USER': 'alirezayn',               # MySQL username
+#         'PASSWORD': 'Adidas:/0631',           # MySQL password
+#         'HOST': 'alirezayn.mysql.pythonanywhere-services.com',                   # Database host (use 'localhost' if it's local)
+#         'PORT': '3306',                        # MySQL port (default is 3306)
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'"
+#         }
+#     }
+# }
 
 
 
@@ -170,11 +171,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # STATIC_ROOT = '/Eriadu/static/'
-STATIC_ROOT = '/home/alirezayn/Eriadu/static'
+# STATIC_ROOT = '/home/alirezayn/Eriadu/static'
 
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'Eriadu/static'),
-# ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
